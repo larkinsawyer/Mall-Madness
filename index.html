@@ -430,37 +430,41 @@
      * Plug in your real audio file paths here.
      ***********************/
     const clips = {
-      GAME_ON: "audio/001-game_on.mp3",
-      TRY_AGAIN_LATER: "audio/002-try_again_later.mp3",
+      GAME_ON: "audio/001_game_on_hi_colors.mp3",
+      TRY_AGAIN_LATER: "audio/003_try_again_later.mp3",
       // simple generic clips you can remap:
-      ATTENTION_SHOPPERS: "audio/003-attention_shoppers.mp3",
-      MEET_ALL_BANK: "audio/004-meet_all_at_bank.mp3",
-      YOU_HUNGRY_PIZZA: "audio/005-you_hungry_pizza.mp3",
-      RESTROOM: "audio/006-go_restroom.mp3",
-      LIGHTS_PARKING_LOT: "audio/007-lights_on_parking_lot.mp3",
-
+      ATTENTION_SHOPPERS: "audio/002_attention_mall_shoppers.mp3",
+      MEET_ALL_BANK: "audio/008-meet_all_at_bank.mp3",
+      YOU_HUNGRY_PIZZA: "audio/0202_hungry_meet_friend_pizza_shop.mp3",
+      RESTROOM: "audio/0203_go_to_restroom.mp3",
+      LIGHTS_PARKING_LOT: "audio/0204_left_lights_on_parking_lot.mp3",
+      WORD_AND_AT_THE: "audio/004_and_at_the.mp3",
+      WORD_CLEARANCE: "audio/007_clearance_at_the.mp3",
+      WORD_SALE: "audio/006_sale_at_the.mp3",
+      BEEP: "audio/005_beep.mp3",
+      
       // movement numbers (1–12)
-      GO_4: "audio/013-go-4.mp3",
-      GO_5: "audio/014-go-5.mp3",
-      GO_6: "audio/015-go-6.mp3",
-      GO_7: "audio/016-go-7.mp3",
-      GO_8: "audio/017-go-8.mp3",
-      GO_9: "audio/018-go-9.mp3",
-      GO_10: "audio/019-go-10.mp3",
-      GO_11: "audio/020-go-11.mp3",
-      GO_12: "audio/021-go-12.mp3",
+      GO_4: "audio/1003_move_4_spaces.mp3",
+      GO_5: "audio/1005_move_5_spaces.mp3",
+      GO_6: "audio/1006_move_6_spaces.mp3",
+      GO_7: "audio/1007_move_7_spaces.mp3",
+      GO_8: "audio/1008_move_8_spaces.mp3",
+      GO_9: "audio/1009_move_9_spaces.mp3",
+      GO_10: "audio/1010_move_10_spaces.mp3",
+      GO_11: "audio/1011_move_11_spaces.mp3",
+      GO_12: "audio/1012_move_12_spaces.mp3",
 
       // sample sale/clearance/misc
-      CHING_CHING: "audio/060-ching-ching.mp3",
-      SPECIAL_SALE: "audio/061-special-sale.mp3",
-      SPECIAL_CLEARANCE: "audio/062-special-clearance.mp3",
-      LONG_LINE: "audio/063-long-line-try-again-later.mp3",
-      OUT_OF_STOCK: "audio/064-out-of-stock.mp3",
-      COSTS_5_MORE: "audio/065-costs-5-more.mp3",
-      BANK_50: "audio/070-bank-take-50.mp3",
-      BANK_75: "audio/071-bank-take-75.mp3",
-      BANK_100: "audio/072-bank-take-100.mp3",
-      BANK_CLOSED: "audio/073-bank-closed.mp3"
+      CHING_CHING: "audio/0301_ching_ching_cash_register.mp3",
+      SPECIAL_SALE: "audio/0302_hey_you_get_a_special_sale.mp3",
+      SPECIAL_CLEARANCE: "audio/0303_hey_you_get_a_special_clearance.mp3",
+      LONG_LINE: "audio/0304_long_line_try_again_later.mp3",
+      OUT_OF_STOCK: "audio/0305_sorry_out_of_stock_try_again_later.mov",
+      COSTS_5_MORE: "audio/0306_your_item_costs_5_more.mp3",
+      BANK_50: "audio/0401_take_50_from_bank.mp3",
+      BANK_75: "audio/0402_take_75_from_bank.mp3",
+      BANK_100: "audio/0403_take_100_from_bank.mp3",
+      BANK_CLOSED: "audio/0404_bank_closed.mp3"
     };
 
     let lastAudio = null;
@@ -648,6 +652,9 @@
 
       // First sales/clearance announcement
       announceSalesAndClearance();
+      playClip("SALE", saleText);
+      playClip("AND_AT", andatTEXT);
+      playClip("CLEARANCE", clearanceText);
 
       const first = getCurrentPlayerColor();
       if (first) {
@@ -662,29 +669,103 @@
     function announceSalesAndClearance() {
       // Placeholder store names; you can wire real store-specific audio clips here.
       const stores = [
-        "Short Circuit",
-        "Yuppy Puppies",
-        "Lollies",
-        "Teen Tunes",
-        "Sunglasses Hut",
-        "Adventure Outfitters"
+        "CARD_SHOP: "audio/_0101_card_shop.mp3",
+        "BOOK_STORE: "audio/_0102_book_store.mp3",
+        "CAMERA_STORE: "audio/_0103_camera_store.mp3",
+        "COMPUTER_STORE: "audio/_0104_computer_store.mp3",
+        "DEPARTMENT_STORE: "audio/_0105_department_store.mp3",
+        "DRUG_STORE: "audio/_0106_drug_store.mp3",
+        "ELECTRONICS_STORE: "audio/_0107_electronics_store.mp3",
+        "FASHION_BOUTIQUE: "audio/_0108_fashion_boutique.mp3",
+        "JEWELRY_STORE: "audio/_0109_jewelry_store.mp3",
+        "KITCHEN_STORE: "audio/_0110_kitchen_store.mp3",
+        "MENS_SHOP: "audio/_0111_mens_shop.mp3",
+        "PET_SHOP: "audio/_0112_pet_shop.mp3",
+        "PHONE_STORE: "audio/_0113_phone_store.mp3",
+        "RECORD_STORE: "audio/_0114_record_store.mp3",
+        "SHOE_STORE: "audio/_0115_shoe_store.mp3",
+        "SPORTS_SHOP: "audio/_0116_sports_shop.mp3",
+        "SUNGLASSES_BOUTIQUE: "audio/_0117_sunglasses_boutique.mp3",
+        "TOY_STORE: "audio/_0118_toy_store.mp3"
       ];
-      const shuffled = shuffle(stores);
-      const clearanceStore = shuffled[0];
-      const sale1 = shuffled[1];
-      const sale2 = shuffled[2];
+      const shuffled = shuffle(STORES);
+  const clearanceStore = shuffled[0];
+  const sale1 = shuffled[1];
+  const sale2 = shuffled[2];
 
-      const msg =
-        "Attention mall shoppers! Clearance at " +
-        clearanceStore +
-        ". Sales at " +
-        sale1 +
-        " and " +
-        sale2 +
-        ". Move the signs.";
-      updateScreen(msg);
-      playClip("ATTENTION_SHOPPERS", msg);
+  // Text for the screen
+  const msg =
+    "Attention mall shoppers! Clearance at " +
+    (clearanceStore ? clearanceStore.name : "a mystery store") +
+    ". Sales at " +
+    (sale1 ? sale1.name : "—") +
+    " and " +
+    (sale2 ? sale2.name : "—") +
+    ". Move the signs.";
+
+  // Build the audio sequence:
+  // “Attention mall shoppers! Clearance [store] Sale [store] and at the [store]”
+  const sequence = [];
+
+  // Intro
+  sequence.push("ATTENTION_MALL_SHOPPERS");
+
+  // "Clearance" + clearance store name (if clip exists)
+  if (clearanceStore) {
+    sequence.push("WORD_CLEARANCE");
+    if (clearanceStore.nameClip) {
+      sequence.push(clearanceStore.nameClip);
     }
+  }
+
+  // "Sale" + first sale store
+  if (sale1) {
+    sequence.push("WORD_SALE");
+    if (sale1.nameClip) {
+      sequence.push(sale1.nameClip);
+    }
+  }
+
+  // "and at the" + second sale store
+  if (sale2) {
+    sequence.push("WORD_AND_AT_THE");
+    if (sale2.nameClip) {
+      sequence.push(sale2.nameClip);
+    }
+  }
+
+  // Show text + play stitched audio
+  playClipSequence(sequence, msg);
+
+  // Optional: update internal storeStatus if you're tracking signs
+  resetStoreStatuses();
+  if (clearanceStore) storeStatus[clearanceStore.id] = "clearance";
+  if (sale1) storeStatus[sale1.id] = "sale";
+  if (sale2) storeStatus[sale2.id] = "sale";
+
+  setStatus("Update the clearance and sale signs on the board.");
+}
+
+async function playClipSequence(keys, screenText) {
+  if (screenText) {
+    updateScreen(screenText);
+  }
+
+  for (const key of keys) {
+    if (!key) continue; // skip null/undefined
+    const src = clips[key];
+    if (!src) continue;
+
+    await new Promise(resolve => {
+      const audio = new Audio(src);
+      lastAudio = audio;
+      lastClipKey = key;
+      audio.addEventListener("ended", resolve);
+      audio.addEventListener("error", resolve);
+      audio.play().catch(() => resolve());
+    });
+  }
+}
 
     function issueMovementForCurrentPlayer() {
       const color = getCurrentPlayerColor();
