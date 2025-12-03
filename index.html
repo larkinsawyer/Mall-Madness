@@ -440,9 +440,6 @@
       LIGHTS_PARKING_LOT: "audio/007-lights_on_parking_lot.mp3",
 
       // movement numbers (1–12)
-      GO_1: "audio/010-go-1.mp3",
-      GO_2: "audio/011-go-2.mp3",
-      GO_3: "audio/012-go-3.mp3",
       GO_4: "audio/013-go-4.mp3",
       GO_5: "audio/014-go-5.mp3",
       GO_6: "audio/015-go-6.mp3",
@@ -454,8 +451,6 @@
       GO_12: "audio/021-go-12.mp3",
 
       // sample sale/clearance/misc
-      SALE_SHORT_CIRCUIT: "audio/050-sale-short-circuit.mp3",
-      CLEARANCE_YUPPY_PUPPIES: "audio/051-clearance-yuppy-puppies.mp3",
       CHING_CHING: "audio/060-ching-ching.mp3",
       SPECIAL_SALE: "audio/061-special-sale.mp3",
       SPECIAL_CLEARANCE: "audio/062-special-clearance.mp3",
@@ -651,7 +646,7 @@
       updateScreen(greetText + " Place your shoppers in the parking lots. Then wait for your turn.");
       playClip("GAME_ON", greetText);
 
-      // First sales/clearance announcement (you can map these to real store clips)
+      // First sales/clearance announcement
       announceSalesAndClearance();
 
       const first = getCurrentPlayerColor();
