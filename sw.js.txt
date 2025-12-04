@@ -1,53 +1,36 @@
-const CACHE_NAME = "mall-madness-cache-v1";
-
-// List all core files you want cached for offline use
-const ASSETS_TO_CACHE = [
-  "./",
-  "./index.html",
-  "./manifest.webmanifest",
-  "./sw.js",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png",
-  // Add your audio files if you want them available offline:
-  // "./audio/001-game_on.mp3",
-  // "./audio/002-try_again_later.mp3",
-  // "./audio/010-go-1.mp3",
-  // ...
+const CACHE_NAME = 'mallmadness-cache-v1';
+const ASSETS = [
+  '.', '/index.html', '/manifest.json',
+  '/icons/icon-192.png', '/icons/icon-512.png'
 ];
 
-self.addEventListener("install", event => {
+// on install: cache shell
+self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
   );
   self.skipWaiting();
 });
 
-self.addEventListener("activate", event => {
+self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys
-          .filter(key => key !== CACHE_NAME)
-          .map(key => caches.delete(key))
-      );
-    })
+    caches.keys().then(keys => Promise.all(
+      keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+    ))
   );
   self.clients.claim();
 });
 
-self.addEventListener("fetch", event => {
-  const request = event.request;
-
-  // For navigation and static assets, try cache first, then network
+self.addEventListener('fetch', event => {
+  if(event.request.method !== 'GET') return;
   event.respondWith(
-    caches.match(request).then(cachedResponse => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(request).catch(() => {
-        // Optional: return a fallback page or response here
+    caches.match(event.request).then(resp => {
+      return resp || fetch(event.request).then(fetchResp => {
+        return fetchResp;
+      }).catch(()=> {
+        if(event.request.mode === 'navigate'){
+          return caches.match('/index.html');
+        }
       });
     })
   );
