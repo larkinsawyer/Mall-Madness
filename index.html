@@ -1,1159 +1,564 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Mall Madness Computer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mall Madness — Retro Computer (PWA)</title>
 
-  <!-- PWA: theme color + manifest -->
-  <meta name="theme-color" content="#ff3c7f" />
-  <link rel="manifest" href="manifest.webmanifest" />
-
-  <!-- iOS specific meta -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Mall Madness" />
-  <link rel="apple-touch-icon" href="icons/icon-192.png" />
-
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#f7f3e9" />
   <style>
-    :root {
-      --purple-body: #602a7a;
-      --purple-dark: #3b174b;
-      --turquoise: #31c3c8;
-      --hot-pink: #ff4fa3;
-      --neon-yellow: #ffe66b;
-      --orange: #ff9f43;
-      --screen-bg: #111319;
-      --screen-glow: #59ffb5;
-      --text-light: #fefafc;
-      --text-muted: #c7c1d8;
+    /* --- Visual style inspired by 1989 Mall Madness plastic computer --- */
+    :root{
+      --case-bg: #f7f3e9; /* beige plastic */
+      --panel-bg: #f0d9c7; /* slightly darker face */
+      --btn-shadow: rgba(0,0,0,0.25);
+      --accent: #2b2b2b;
+      --led-off: #3a3a3a;
+      --led-on: #59d65a;
+      --font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --button-radius: 8px;
+      --big-btn-size: 84px;
+    }
+    html,body{height:100%;margin:0;background:#e7e3db;font-family:var(--font-family);-webkit-font-smoothing:antialiased}
+    .wrap{
+      max-width:980px;margin:18px auto;padding:18px;
+      display:grid;grid-template-columns: 420px 1fr;gap:16px;
     }
 
-    * {
-      box-sizing: border-box;
+    /* Left: retro computer panel */
+    .computer {
+      background: linear-gradient(180deg, var(--case-bg) 0%, #efe6d6 100%);
+      border-radius:20px;padding:22px;box-shadow:0 8px 18px rgba(0,0,0,0.18);
+      border: 3px solid rgba(0,0,0,0.06);
+    }
+    .screen {
+      height:130px;border-radius:6px;background:#0b1220;color:#dff6d8;padding:10px;
+      font-family: "Courier New", monospace; font-size:14px; overflow:auto;
+      box-shadow: inset 0 -6px 24px rgba(0,0,0,0.6);
+      display:flex;align-items:flex-start;justify-content:flex-start;flex-direction:column;
+    }
+    .screen .line { margin:2px 0; }
+
+    .controls{margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+    .btn {
+      background:linear-gradient(180deg,#fff 0%, #e7e3db 100%);
+      border:1px solid rgba(0,0,0,0.12);padding:8px 12px;border-radius:8px;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.12), inset 0 -2px 0 rgba(0,0,0,0.03);
+      cursor:pointer;font-weight:700;
+    }
+    .btn:active{transform:translateY(2px);box-shadow:none}
+    .big-btn{
+      width:var(--big-btn-size);height:var(--big-btn-size);
+      font-size:16px;border-radius:14px;display:flex;align-items:center;justify-content:center;
     }
 
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
-      background: radial-gradient(circle at top, #3f1457 0, #05020b 55%);
-      color: var(--text-light);
-      min-height: 100vh;
-      margin: 0;
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    .btn-move { background: linear-gradient(180deg,#ffd3d3,#ff9d9d); }
+    .btn-repeat { background:linear-gradient(180deg,#fff7c7,#ffef9a); }
+    .btn-game { background:linear-gradient(180deg,#d3f0ff,#9bd2ff); }
 
-    .console {
-      width: 100%;
-      max-width: 420px;
-      background: linear-gradient(145deg, var(--purple-body), var(--purple-dark));
-      border-radius: 36px;
-      box-shadow:
-        0 20px 40px rgba(0, 0, 0, 0.75),
-        0 0 0 4px rgba(255, 255, 255, 0.07);
-      padding: 16px 16px 20px;
-      position: relative;
-      overflow: hidden;
-    }
+    .slots { margin-top:12px; display:flex;gap:12px; align-items:center; }
+    .slot { width:120px;height:48px;border-radius:8px;background:#222;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow: inset 0 -4px 8px rgba(0,0,0,0.35); }
+    .slot.small{width:80px;height:36px}
 
-    .console::before {
-      content: "";
-      position: absolute;
-      inset: -40%;
-      background: radial-gradient(circle at top left,
-          rgba(255, 255, 255, 0.12),
-          transparent 55%);
-      pointer-events: none;
-    }
+    .led-row{display:flex;gap:6px;margin-left:auto}
+    .led { width:14px;height:14px;border-radius:4px;background:var(--led-off);box-shadow:0 2px 0 rgba(0,0,0,0.14) inset; }
+    .led.on{background:var(--led-on);box-shadow:0 2px 6px rgba(80,220,120,0.4); }
 
-    .console-header {
-      text-align: center;
-      margin-bottom: 8px;
-      position: relative;
-      z-index: 1;
-    }
+    /* Right: game helper */
+    .panel { background:var(--panel-bg);border-radius:12px;padding:14px;box-shadow:0 6px 12px rgba(0,0,0,0.08) }
+    .color-picker{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .color-swatch{width:46px;height:46px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;cursor:pointer}
+    .color-red{background:#e64545} .color-blue{background:#4a9be8} .color-green{background:#45c47a} .color-yellow{background:#ffd34a;color:#333}
+    .small-info{font-size:13px;color:#333;margin-top:8px}
+    .log{height:320px;overflow:auto;background:#fff;padding:8px;border-radius:8px;margin-top:10px;font-family:monospace;font-size:13px}
+    .row { display:flex;gap:8px;align-items:center;margin:6px 0; }
 
-    .console-title {
-      font-size: 1.2rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--neon-yellow);
-      text-shadow:
-        0 0 6px rgba(0, 0, 0, 0.9),
-        0 0 10px rgba(255, 239, 122, 0.4);
-    }
-
-    .console-subtitle {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .color-strip {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-      margin: 10px 4px 12px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .color-chip {
-      border-radius: 999px;
-      padding: 4px 0;
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      text-align: center;
-      border: 1px solid rgba(0, 0, 0, 0.4);
-      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.6);
-      cursor: pointer;
-      opacity: 0.65;
-      transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.15s;
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.25), transparent);
-    }
-
-    .color-chip.active {
-      opacity: 1;
-      transform: translateY(-1px);
-      box-shadow:
-        0 3px 0 rgba(0, 0, 0, 0.75),
-        0 0 0 2px rgba(255, 255, 255, 0.18);
-    }
-
-    .chip-red {
-      background: linear-gradient(145deg, #ff6b6b, #c92a2a);
-      color: #fff;
-    }
-    .chip-blue {
-      background: linear-gradient(145deg, #4dabf7, #1864ab);
-      color: #fff;
-    }
-    .chip-green {
-      background: linear-gradient(145deg, #51cf66, #2b8a3e);
-      color: #fff;
-    }
-    .chip-yellow {
-      background: linear-gradient(145deg, #ffe066, #f08c00);
-      color: #3b2800;
-    }
-
-    .screen-wrap {
-      position: relative;
-      z-index: 1;
-      border-radius: 18px;
-      padding: 6px;
-      background: radial-gradient(circle at top, #4a3e84, #130b2a);
-      box-shadow:
-        0 0 0 2px rgba(0, 0, 0, 0.6),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-      margin-bottom: 12px;
-    }
-
-    .screen-inner {
-      border-radius: 14px;
-      background: radial-gradient(circle at top left,
-          rgba(89, 255, 181, 0.12),
-          var(--screen-bg) 55%);
-      min-height: 96px;
-      padding: 10px 12px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      box-shadow:
-        inset 0 0 0 1px rgba(255, 255, 255, 0.04),
-        0 0 12px rgba(89, 255, 181, 0.2);
-      position: relative;
-    }
-
-    .screen-label {
-      font-size: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--screen-glow);
-      opacity: 0.88;
-      margin-bottom: 4px;
-    }
-
-    #screen {
-      font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 0.85rem;
-      color: #e5fff4;
-      min-height: 40px;
-      line-height: 1.3;
-    }
-
-    #status {
-      margin-top: 6px;
-      font-size: 0.7rem;
-      color: var(--text-muted);
-    }
-
-    .led-row {
-      position: absolute;
-      right: 10px;
-      top: 8px;
-      display: flex;
-      gap: 4px;
-    }
-
-    .led {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: rgba(120, 120, 120, 0.5);
-      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.8);
-    }
-    .led.on {
-      background: var(--screen-glow);
-      box-shadow:
-        0 0 4px rgba(89, 255, 181, 0.9),
-        0 0 8px rgba(89, 255, 181, 0.6);
-    }
-
-    .button-grid {
-      margin-top: 10px;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      position: relative;
-      z-index: 1;
-    }
-
-    button {
-      border-radius: 999px;
-      border: none;
-      padding: 10px 6px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      cursor: pointer;
-      box-shadow:
-        0 3px 0 rgba(0, 0, 0, 0.8),
-        0 0 0 1px rgba(0, 0, 0, 0.6);
-      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.1s;
-      color: #fff;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    button:active {
-      transform: translateY(2px);
-      box-shadow:
-        0 1px 0 rgba(0, 0, 0, 0.9),
-        0 0 0 1px rgba(0, 0, 0, 0.8);
-      filter: brightness(0.96);
-    }
-
-    .btn-game-on {
-      grid-column: span 3;
-      background: radial-gradient(circle at top, #ffd1f0, var(--hot-pink));
-    }
-
-    .btn-move {
-      background: radial-gradient(circle at top, #c7fff9, var(--turquoise));
-      color: #073a3b;
-    }
-
-    .btn-repeat {
-      background: radial-gradient(circle at top, #fff7c7, var(--neon-yellow));
-      color: #3b2f00;
-    }
-
-    .btn-buy {
-      background: radial-gradient(circle at top, #ffd3b6, var(--orange));
-    }
-
-    .btn-bank {
-      background: radial-gradient(circle at top, #d2ccff, #5248ff);
-    }
-
-    .btn-long-game {
-      grid-column: span 3;
-      background: radial-gradient(circle at top, #f2f2f2, #9e9e9e);
-      color: #1a1a1a;
-      font-size: 0.65rem;
-    }
-
-    .foot-panel {
-      margin-top: 12px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(0, 0, 0, 0.5);
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .foot-title {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--text-muted);
-    }
-
-    .player-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      font-size: 0.7rem;
-      padding: 3px 0;
-    }
-    .player-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 600;
-    }
-    .dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 999px;
-      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.8);
-    }
-    .dot.red { background: #ff6b6b; }
-    .dot.blue { background: #4dabf7; }
-    .dot.green { background: #51cf66; }
-    .dot.yellow { background: #ffe066; }
-
-    .player-meta {
-      text-align: right;
-      color: var(--text-muted);
-    }
-
-    .player-meta span {
-      margin-left: 8px;
-    }
-
-    .purchase-row {
-      margin-top: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      flex-wrap: wrap;
-    }
-
-    select {
-      font-size: 0.75rem;
-      padding: 4px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(0, 0, 0, 0.7);
-      background: rgba(10, 7, 25, 0.9);
-      color: var(--text-light);
-      outline: none;
-    }
-
-    @media (max-width: 380px) {
-      .button-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      .btn-game-on,
-      .btn-long-game {
-        grid-column: span 2;
-      }
+    footer{grid-column:1/-1;margin-top:10px;color:#666;font-size:13px}
+    @media (max-width:900px){
+      .wrap{grid-template-columns:1fr; padding:12px}
     }
   </style>
 </head>
 <body>
-  <div class="console">
-    <div class="console-header">
-      <div class="console-title">Mall Madness</div>
-      <div class="console-subtitle">Electronic Shopping Computer</div>
-    </div>
-
-    <!-- Color selection (who's playing) -->
-    <div class="color-strip" id="color-strip">
-      <div class="color-chip chip-red" data-color="Red">Red</div>
-      <div class="color-chip chip-blue" data-color="Blue">Blue</div>
-      <div class="color-chip chip-green" data-color="Green">Green</div>
-      <div class="color-chip chip-yellow" data-color="Yellow">Yellow</div>
-    </div>
-
-    <!-- Screen -->
-    <div class="screen-wrap">
-      <div class="screen-inner">
-        <div class="led-row">
-          <div class="led" id="led-power"></div>
-          <div class="led" id="led-turn"></div>
+  <div class="wrap">
+    <div class="computer" role="application" aria-label="Mall Madness Retro Computer">
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="font-weight:800;font-size:20px;color:var(--accent)">VOICE OF THE MALL</div>
+        <div class="led-row" aria-hidden="true">
+          <div id="led-power" class="led"></div>
+          <div id="led-game" class="led"></div>
+          <div id="led-move" class="led"></div>
         </div>
-        <div class="screen-label">Voice of the Mall</div>
-        <div id="screen">Select which shopper colors are playing, then press GAME ON.</div>
-        <div id="status"></div>
+      </div>
+
+      <div class="screen" id="screen" aria-live="polite" role="status">
+        <div class="line">Press <strong>GAME ON</strong> to begin.</div>
+      </div>
+
+      <div class="controls">
+        <button id="gameBtn" class="btn btn-game big-btn" title="Game On">GAME ON</button>
+        <button id="moveBtn" class="btn btn-move big-btn" title="Move / Confirm">MOVE</button>
+        <button id="repeatBtn" class="btn btn-repeat big-btn" title="Repeat">REPEAT</button>
+        <div class="slots" style="margin-left:auto">
+          <div class="slot small" id="buySlot">BUY</div>
+          <div class="slot small" id="bankSlot">BANK</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+        <div class="slot" id="cardSlot" style="width:200px">Card Slot: <span id="cardHolder" style="margin-left:8px;font-weight:normal">—</span></div>
+        <div style="margin-left:auto;font-size:13px;color:#333">Players: <span id="playersCount">0</span></div>
       </div>
     </div>
 
-    <!-- Buttons -->
-    <div class="button-grid">
-      <button class="btn-game-on" id="btn-game-on">Game On</button>
+    <div class="panel" aria-hidden="false">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <strong>Player Setup / Debug</strong>
+        <button id="resetBtn" class="btn">Reset</button>
+      </div>
 
-      <button class="btn-move" id="btn-move">Move</button>
-      <button class="btn-repeat" id="btn-repeat">Repeat</button>
+      <div class="row" style="margin-top:8px;">
+        <div style="width:42%"><label>Active Players</label>
+          <div class="color-picker" id="playerPicker">
+            <div class="color-swatch color-red" data-color="red" style="opacity:0.45">RED</div>
+            <div class="color-swatch color-blue" data-color="blue" style="opacity:0.45">BLUE</div>
+            <div class="color-swatch color-green" data-color="green" style="opacity:0.45">GREEN</div>
+            <div class="color-swatch color-yellow" data-color="yellow" style="opacity:0.45">YEL</div>
+          </div>
+        </div>
 
-      <button class="btn-buy" id="btn-buy">Buy</button>
-      <button class="btn-bank" id="btn-bank">Bank</button>
+        <div style="width:56%">
+          <label>Insert Card / Action</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select id="cardSelect" class="btn" aria-label="Select card player">
+              <option value="">-- choose player card --</option>
+              <option value="red">Red</option>
+              <option value="blue">Blue</option>
+              <option value="green">Green</option>
+              <option value="yellow">Yellow</option>
+            </select>
+            <button id="insertBuy" class="btn">Insert Buy</button>
+            <button id="insertBank" class="btn">Insert Bank</button>
+          </div>
+        </div>
+      </div>
 
-      <button class="btn-long-game" id="btn-long-game" type="button">
-        Toggle: 6&thinsp;/&thinsp;10 Item Game
-      </button>
+      <div class="small-info">Game log & announcements</div>
+      <div id="log" class="log" role="log" aria-live="polite"></div>
     </div>
 
-    <div class="purchase-row">
-      <span>Purchase type:</span>
-      <select id="purchase-type">
-        <option value="item">Store item (peg)</option>
-        <option value="pizza">Pizza ($5 helper)</option>
-      </select>
-      <span style="flex:1; text-align:right;">
-        Use BUY only when you are in a store.
-      </span>
-    </div>
-
-    <!-- Player info -->
-    <div class="foot-panel" id="players-panel">
-      <div class="foot-title">Shopper Status</div>
-      <!-- Player rows inserted by JS -->
-    </div>
+    <footer>
+      This is a fan recreation for personal use. Drop your audio files into <code>/audio/</code> and keep the AUDIO_MAP in the script. To make this installable as a PWA, open the site over HTTPS or run locally via a simple static server.
+    </footer>
   </div>
 
-   <script>
-    /***********************
-     * AUDIO CLIP MAPPING
-     * Plug in your real audio file paths here.
-     ***********************/
-    const clips = {
-      GAME_ON: "audio/001_game_on_hi_colors.mp3",
-      TRY_AGAIN_LATER: "audio/003_try_again_later.mp3",
+  <script>
+  /***************************************************************
+   * Mall Madness - Retro Computer (client logic) - integrated with user clips
+   ***************************************************************/
 
-      // phrase / word clips
-      ATTENTION_SHOPPERS: "audio/002_attention_mall_shoppers.mp3",
-      MEET_ALL_BANK: "audio/008-meet_all_at_bank.mp3",
-      YOU_HUNGRY_PIZZA: "audio/0202_hungry_meet_friend_pizza_shop.mp3",
-      RESTROOM: "audio/0203_go_to_restroom.mp3",
-      LIGHTS_PARKING_LOT: "audio/0204_left_lights_on_parking_lot.mp3",
-      WORD_AND_AT_THE: "audio/004_and_at_the.mp3",
-      WORD_CLEARANCE: "audio/007_clearance_at_the.mp3",
-      WORD_SALE: "audio/006_sale_at_the.mp3",
-      BEEP: "audio/005_beep.mp3",
+  const AUDIO_MAP = {
+    // Startup / game on sequence
+    "startup": "audio/001_game_on_hi_colors.mp3",
+    "try_again": "audio/003_try_again_later.mp3",
 
-      // movement numbers (4–12)
-      GO_4: "audio/1003_move_4_spaces.mp3",
-      GO_5: "audio/1005_move_5_spaces.mp3",
-      GO_6: "audio/1006_move_6_spaces.mp3",
-      GO_7: "audio/1007_move_7_spaces.mp3",
-      GO_8: "audio/1008_move_8_spaces.mp3",
-      GO_9: "audio/1009_move_9_spaces.mp3",
-      GO_10: "audio/1010_move_10_spaces.mp3",
-      GO_11: "audio/1011_move_11_spaces.mp3",
-      GO_12: "audio/1012_move_12_spaces.mp3",
+    // Phrase / word clips
+    "attention": "audio/002_attention_mall_shoppers.mp3",
+    "meet_all_bank": "audio/008-meet_all_at_bank.mp3",
+    "pizza": "audio/0202_hungry_meet_friend_pizza_shop.mp3",
+    "restroom": "audio/0203_go_to_restroom.mp3",
+    "lights_parking": "audio/0204_left_lights_on_parking_lot.mp3",
+    "and_at_the": "audio/004_and_at_the.mp3",
+    "clearance_word": "audio/007_clearance_at_the.mp3",
+    "sale_word": "audio/006_sale_at_the.mp3",
+    "beep": "audio/005_beep.mp3",
 
-      // sale/clearance/bank
-      CHING_CHING: "audio/0301_ching_ching_cash_register.mp3",
-      SPECIAL_SALE: "audio/0302_hey_you_get_a_special_sale.mp3",
-      SPECIAL_CLEARANCE: "audio/0303_hey_you_get_a_special_clearance.mp3",
-      LONG_LINE: "audio/0304_long_line_try_again_later.mp3",
-      OUT_OF_STOCK: "audio/0305_sorry_out_of_stock_try_again_later.mp3",
-      COSTS_5_MORE: "audio/0306_your_item_costs_5_more.mp3",
-      BANK_50: "audio/0401_take_50_from_bank.mp3",
-      BANK_75: "audio/0402_take_75_from_bank.mp3",
-      BANK_100: "audio/0403_take_100_from_bank.mp3",
-      BANK_CLOSED: "audio/0404_bank_closed.mp3"
+    // Movement numbers (4–12)
+    "move_4":  "audio/1003_move_4_spaces.mp3",
+    "move_5":  "audio/1005_move_5_spaces.mp3",
+    "move_6":  "audio/1006_move_6_spaces.mp3",
+    "move_7":  "audio/1007_move_7_spaces.mp3",
+    "move_8":  "audio/1008_move_8_spaces.mp3",
+    "move_9":  "audio/1009_move_9_spaces.mp3",
+    "move_10": "audio/1010_move_10_spaces.mp3",
+    "move_11": "audio/1011_move_11_spaces.mp3",
+    "move_12": "audio/1012_move_12_spaces.mp3",
 
-      // If you add store-name clips later, put them here, e.g.:
-      // STORE_CARD_SHOP: "audio/store_card_shop.mp3",
-      // SPECIAL_SALE_CARD_SHOP: "audio/sale_card_shop.mp3",
-      // SPECIAL_CLEARANCE_CARD_SHOP: "audio/clearance_card_shop.mp3",
-    };
+    // Sale / clearance / buy outcomes
+    "ching": "audio/0301_ching_ching_cash_register.mp3",
+    "special_sale": "audio/0302_hey_you_get_a_special_sale.mp3",
+    "special_clearance": "audio/0303_hey_you_get_a_special_clearance.mp3",
+    "long_line": "audio/0304_long_line_try_again_later.mp3",
+    "out_of_stock": "audio/0305_sorry_out_of_stock_try_again_later.mp3",
+    "costs_5_more": "audio/0306_your_item_costs_5_more.mp3",
 
-    let lastAudio = null;
-    let lastClipKey = null;
+    // Bank responses
+    "bank_50":  "audio/0401_take_50_from_bank.mp3",
+    "bank_75":  "audio/0402_take_75_from_bank.mp3",
+    "bank_100": "audio/0403_take_100_from_bank.mp3",
+    "bank_closed": "audio/0404_bank_closed.mp3",
 
-    function playClip(key, labelText) {
-      const src = clips[key];
-      if (!src) {
-        if (labelText) {
-          updateScreen(labelText + " (no audio mapped: " + key + ")");
-        } else {
-          updateScreen("Missing audio: " + key);
-        }
-        return;
-      }
-      if (lastAudio) {
-        lastAudio.pause();
-      }
-      const audio = new Audio(src);
-      lastAudio = audio;
-      lastClipKey = key;
-      audio.play().catch(err => {
-        console.error("Audio play error", err);
+    // Fallback / turn indicators
+    "turn_red": "audio/005_beep.mp3",
+    "turn_blue": "audio/005_beep.mp3",
+    "turn_green": "audio/005_beep.mp3",
+    "turn_yellow": "audio/005_beep.mp3",
+
+    // sales announcement
+    "announce_sales": "audio/006_sale_at_the.mp3",
+
+    // Store clips
+    "store_card_shop": "audio/_0101_card_shop.mp3",
+    "store_book_store": "audio/_0102_book_store.mp3",
+    "store_camera_store": "audio/_0103_camera_store.mp3",
+    "store_computer_store": "audio/_0104_computer_store.mp3",
+    "store_department_store": "audio/_0105_department_store.mp3",
+    "store_drug_store": "audio/_0106_drug_store.mp3",
+    "store_electronics_store": "audio/_0107_electronics_store.mp3",
+    "store_fashion_boutique": "audio/_0108_fashion_boutique.mp3",
+    "store_jewelry_store": "audio/_0109_jewelry_store.mp3",
+    "store_kitchen_store": "audio/_0110_kitchen_store.mp3",
+    "store_mens_shop": "audio/_0111_mens_shop.mp3",
+    "store_pet_shop": "audio/_0112_pet_shop.mp3",
+    "store_phone_store": "audio/_0113_phone_store.mp3",
+    "store_record_store": "audio/_0114_record_store.mp3",
+    "store_shoe_store": "audio/_0115_shoe_store.mp3",
+    "store_sports_shop": "audio/_0116_sports_shop.mp3",
+    "store_sunglasses_boutique": "audio/_0117_sunglasses_boutique.mp3",
+    "store_toy_store": "audio/_0118_toy_store.mp3"
+  };
+
+  // Preload audio objects
+  const audio = {};
+  Object.entries(AUDIO_MAP).forEach(([key, filename])=>{
+    const a = new Audio(filename);
+    a.preload = "auto";
+    audio[key] = a;
+  });
+
+  // UI refs
+  const screen = document.getElementById('screen');
+  const logEl = document.getElementById('log');
+  const gameBtn = document.getElementById('gameBtn');
+  const moveBtn = document.getElementById('moveBtn');
+  const repeatBtn = document.getElementById('repeatBtn');
+  const buySlot = document.getElementById('buySlot');
+  const bankSlot = document.getElementById('bankSlot');
+  const cardSelect = document.getElementById('cardSelect');
+  const insertBuy = document.getElementById('insertBuy');
+  const insertBank = document.getElementById('insertBank');
+  const playerPicker = document.getElementById('playerPicker');
+  const playersCountEl = document.getElementById('playersCount');
+  const cardHolder = document.getElementById('cardHolder');
+  const resetBtn = document.getElementById('resetBtn');
+  const ledPower = document.getElementById('led-power');
+  const ledGame = document.getElementById('led-game');
+  const ledMove = document.getElementById('led-move');
+
+  // App state
+  const state = {
+    players: { red:false, blue:false, green:false, yellow:false },
+    playerOrder: [],
+    currentTurnIndex: 0,
+    awaitingColorSelection: false,
+    lastAnnouncement: null,
+    cardInsertedFor: null
+  };
+
+  // Helpers
+  function log(msg){
+    const d = new Date().toLocaleTimeString();
+    const line = document.createElement('div');
+    line.textContent = `[${d}] ${msg}`;
+    logEl.prepend(line);
+  }
+  function screenWrite(text){
+    const line = document.createElement('div');
+    line.className='line';
+    line.innerHTML = text;
+    screen.prepend(line);
+    if(screen.children.length > 8) screen.removeChild(screen.lastChild);
+  }
+  function play(key){
+    const a = audio[key];
+    if(!a){
+      log(`Audio missing for "${key}"`);
+      screenWrite(`<em>(sound:${key})</em> ${key}`);
+      state.lastAnnouncement = key;
+      return;
+    }
+    try {
+      a.currentTime = 0;
+      a.play().catch(err=> {
+        console.warn("Play interrupted:", err);
       });
-      if (labelText) {
-        updateScreen(labelText);
-      }
+      state.lastAnnouncement = key;
+      log(`Playing: ${key} -> ${AUDIO_MAP[key] || 'unknown'}`);
+    } catch(e){
+      console.warn("Play failed",e);
     }
+  }
 
-    /********************************************************
-     * STORE DEFINITIONS + STATUS
-     ********************************************************/
-    const STORES = [
-      { id: "CARD_SHOP",            name: "Card Shop",            nameClip: null, saleClip: null, clearanceClip: null },
-      { id: "BOOK_STORE",           name: "Book Store",           nameClip: null, saleClip: null, clearanceClip: null },
-      { id: "CAMERA_STORE",         name: "Camera Store",         nameClip: null, saleClip: null, clearanceClip: null },
-      { id: "COMPUTER_STORE",       name: "Computer Store",       nameClip: null, saleClip: null, clearanceClip: null },
-      { id: "DEPARTMENT_STORE",     name: "Department Store",     nameClip: null, saleClip: null, clearanceClip: null },
-      { id: "DRUG_STORE",           name: "Drug Store",           nameClip: null, saleClip: null, clearanceClip: null },
-      { id: "ELECTRONICS_STORE",    name: "Electronics Store",    nameClip: null, saleClip: null, clearanceClip: null },
-      { id: "FASHION_BOUTIQUE",     name: "Fashion Boutique",     nameClip: null, saleClip: null, clearanceClip: null },
-      { id: "JEWELRY_STORE",        name: "Jewelry Store",        nameClip: null, saleClip: null, clearanceClip: null },
-      { id: "KITCHEN_STORE",        name: "Kitchen Store",        nameClip: null, saleClip: null, clearanceClip: null },
-      { id: "MENS_SHOP",            name: "Men's Shop",           nameClip: null, saleClip: null, clearanceClip: null },
-      { id: "PET_SHOP",             name: "Pet Shop",             nameClip: null, saleClip: null, clearanceClip: null },
-      { id: "PHONE_STORE",          name: "Phone Store",          nameClip: null, saleClip: null, clearanceClip: null },
-      { id: "RECORD_STORE",         name: "Record Store",         nameClip: null, saleClip: null, clearanceClip: null },
-      { id: "SHOE_STORE",           name: "Shoe Store",           nameClip: null, saleClip: null, clearanceClip: null },
-      { id: "SPORTS_SHOP",          name: "Sports Shop",          nameClip: null, saleClip: null, clearanceClip: null },
-      { id: "SUNGLASSES_BOUTIQUE",  name: "Sunglasses Boutique",  nameClip: null, saleClip: null, clearanceClip: null },
-      { id: "TOY_STORE",            name: "Toy Store",            nameClip: null, saleClip: null, clearanceClip: null }
-    ];
+  // convenience: choose random element
+  function rnd(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function capitalize(s){return s && s[0].toUpperCase()+s.slice(1);}
 
-    const storeStatus = {}; // storeId -> "sale" | "clearance" | null
+  // UI actions
+  // Select players by clicking swatches
+  playerPicker.addEventListener('click', (ev)=>{
+    const sw = ev.target.closest('.color-swatch');
+    if(!sw) return;
+    const color = sw.dataset.color;
+    state.players[color] = !state.players[color];
+    sw.style.opacity = state.players[color] ? '1' : '0.45';
+    updatePlayersCount();
+  });
 
-    function resetStoreStatuses() {
-      STORES.forEach(store => {
-        storeStatus[store.id] = null;
-      });
-    }
+  function updatePlayersCount(){
+    const count = Object.values(state.players).filter(Boolean).length;
+    playersCountEl.textContent = count;
+  }
 
-    /***********************
-     * GAME STATE
-     ***********************/
-    const COLORS = ["Red", "Blue", "Green", "Yellow"];
-    let activePlayers = [];
-    let players = {}; // e.g. { Red: { items: 0, canBank: true } }
-    let currentPlayerIndex = 0;
-    let awaitingMovement = false; // true = MOVE will give directions; false = MOVE will end turn
-    let lastMessage = "Select which shopper colors are playing, then press GAME ON.";
-    let targetItems = 6; // 6 or 10
-    let gameStarted = false;
+  // GAME ON sequence
+  gameBtn.addEventListener('click', ()=>{
+    ledPower.classList.add('on');
+    ledGame.classList.add('on');
+    screenWrite("<strong>GAME ON</strong> - Initializing...");
+    play('startup');
 
-    const STATE = {
-      IDLE: "IDLE",
-      RUNNING: "RUNNING"
-    };
-    let state = STATE.IDLE;
+    // After startup, announce attention and sales (timings mimic old device)
+    setTimeout(()=>{
+      play('attention');
+      screenWrite("Attention Mall Shoppers!");
+    }, 1400);
 
-    /***********************
-     * DOM HELPERS
-     ***********************/
-    const screenEl = document.getElementById("screen");
-    const statusEl = document.getElementById("status");
-    const ledPower = document.getElementById("led-power");
-    const ledTurn = document.getElementById("led-turn");
-    const playersPanel = document.getElementById("players-panel");
-    const purchaseTypeSelect = document.getElementById("purchase-type");
+    setTimeout(()=>{
+      play('announce_sales');
+      screenWrite("Sales & Clearances");
+    }, 3000);
 
-    function updateScreen(text) {
-      screenEl.textContent = text;
-      lastMessage = text;
-    }
+    // Begin registration phase: give players ~6 seconds to register (press MOVE while their color is active)
+    state.awaitingColorSelection = true;
+    screenWrite("Registration: select your card then press MOVE when your color is announced.");
 
-    function setStatus(text) {
-      statusEl.textContent = text || "";
-    }
-
-    function setPowerLed(on) {
-      ledPower.classList.toggle("on", on);
-    }
-
-    function setTurnLed(on) {
-      ledTurn.classList.toggle("on", on);
-    }
-
-    function shuffle(array) {
-      const arr = array.slice();
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    }
-
-    function getCurrentPlayerColor() {
-      if (!activePlayers.length) return null;
-      return activePlayers[currentPlayerIndex % activePlayers.length];
-    }
-
-    function rebuildPlayerPanel() {
-      // Clear old rows except title
-      const rows = Array.from(playersPanel.querySelectorAll(".player-row"));
-      rows.forEach(r => r.remove());
-
-      activePlayers.forEach(color => {
-        const p = players[color];
-        const row = document.createElement("div");
-        row.className = "player-row";
-
-        const label = document.createElement("div");
-        label.className = "player-label";
-
-        const dot = document.createElement("span");
-        dot.className = "dot " + color.toLowerCase();
-
-        const name = document.createElement("span");
-        name.textContent = color;
-
-        label.appendChild(dot);
-        label.appendChild(name);
-
-        const meta = document.createElement("div");
-        meta.className = "player-meta";
-        meta.innerHTML =
-          `<span>${p.items} item${p.items === 1 ? "" : "s"}</span>` +
-          `<span>${p.canBank ? "Bank OK" : "Bank closed"}</span>`;
-
-        row.appendChild(label);
-        row.appendChild(meta);
-        playersPanel.appendChild(row);
-      });
-    }
-
-    function initPlayers() {
-      players = {};
-      activePlayers.forEach(color => {
-        players[color] = {
-          items: 0,           // counts pegs (not pizza)
-          canBank: true,      // can withdraw? becomes false until they buy something
-          hasJustBought: false // for internal bookkeeping if you want to extend
-        };
-      });
-      rebuildPlayerPanel();
-    }
-
-    /***********************
-     * COLOR SELECTION (who is playing)
-     ***********************/
-    document.querySelectorAll(".color-chip").forEach(chip => {
-      chip.addEventListener("click", () => {
-        const color = chip.dataset.color;
-        if (state !== STATE.IDLE && gameStarted) {
-          // do not allow changing colors mid-game
-          return;
-        }
-        const idx = activePlayers.indexOf(color);
-        if (idx === -1) {
-          activePlayers.push(color);
-          chip.classList.add("active");
-        } else {
-          activePlayers.splice(idx, 1);
-          chip.classList.remove("active");
-        }
-        setStatus(
-          activePlayers.length
-            ? "Shoppers: " + activePlayers.join(", ")
-            : "No shoppers selected yet."
-        );
-      });
+    // Simulate calling colors in sequence with small spacing; players can press MOVE to register
+    const colors = ['red','blue','green','yellow'];
+    colors.forEach((c, i)=>{
+      setTimeout(()=>{
+        // visually announce color on screen and with beep/turn indicator (we use beep as placeholder)
+        play(`turn_${c}`);
+        screenWrite(`...${capitalize(c)}...`);
+        // allow a window for move-press registration (here we check if someone pressed while this color was active)
+        // Implementation: if player pressed MOVE with card selected, we register them (see MOVE handler).
+      }, 3500 + i*900);
     });
 
-    /***********************
-     * SALES / CLEARANCE ANNOUNCEMENT
-     ***********************/
-    async function playClipSequence(keys, screenText) {
-      if (screenText) {
-        updateScreen(screenText);
+    // End registration phase after colors announced
+    setTimeout(()=>{
+      state.awaitingColorSelection = false;
+      // If user didn't register any order, build default order from selected players
+      const active = Object.keys(state.players).filter(k=>state.players[k]);
+      if(active.length > 0){
+        state.playerOrder = active.slice(); // keep UI-chosen order
+      } else {
+        // default to all colors
+        state.playerOrder = ['red','blue','green','yellow'];
       }
+      screenWrite("Registration complete. Player order: " + state.playerOrder.map(capitalize).join(', '));
+      log("Player order: " + state.playerOrder.join(','));
+      // announce first turn
+      setTimeout(()=> announceNextTurn(), 900);
+    }, 3500 + 4*900 + 800);
+  });
 
-      for (const key of keys) {
-        if (!key) continue;
-        const src = clips[key];
-        if (!src) continue;
-
-        await new Promise(resolve => {
-          const audio = new Audio(src);
-          lastAudio = audio;
-          lastClipKey = key;
-          audio.addEventListener("ended", resolve);
-          audio.addEventListener("error", resolve);
-          audio.play().catch(() => resolve());
-        });
-      }
-    }
-
-    function announceSalesAndClearance() {
-      const shuffled = shuffle(STORES);
-      const clearanceStore = shuffled[0];
-      const sale1 = shuffled[1];
-      const sale2 = shuffled[2];
-
-      resetStoreStatuses();
-      if (clearanceStore) storeStatus[clearanceStore.id] = "clearance";
-      if (sale1)          storeStatus[sale1.id]          = "sale";
-      if (sale2)          storeStatus[sale2.id]          = "sale";
-
-      const msg =
-        "Attention mall shoppers! Clearance at " +
-        (clearanceStore ? clearanceStore.name : "a mystery store") +
-        ". Sales at " +
-        (sale1 ? sale1.name : "—") +
-        " and " +
-        (sale2 ? sale2.name : "—") +
-        ". Move the signs.";
-
-      const seq = [];
-
-      seq.push("ATTENTION_SHOPPERS");
-
-      if (clearanceStore) {
-        seq.push("WORD_CLEARANCE");
-        if (clearanceStore.nameClip && clips[clearanceStore.nameClip]) {
-          seq.push(clearanceStore.nameClip);
+  // MOVE button: registration during initial sequence, or play a turn (move) during play
+  moveBtn.addEventListener('click', ()=>{
+    if(state.awaitingColorSelection){
+      // Registration flow: use selected card from dropdown as "I pressed MOVE for this color"
+      const selectedCard = cardSelect.value;
+      if(selectedCard && state.players[selectedCard]){
+        if(!state.playerOrder.includes(selectedCard)){
+          state.playerOrder.push(selectedCard);
+          screenWrite(`Registered player: ${capitalize(selectedCard)}`);
+          log(`Registered via MOVE: ${selectedCard}`);
+          play(`turn_${selectedCard}`);
         } else {
-          seq.push("BEEP");
+          screenWrite(`${capitalize(selectedCard)} already registered.`);
+        }
+      } else {
+        // no selected card -> try to auto-register first active color
+        const firstActive = Object.keys(state.players).find(k=>state.players[k]);
+        if(firstActive && !state.playerOrder.includes(firstActive)){
+          state.playerOrder.push(firstActive);
+          screenWrite(`Auto-registered ${capitalize(firstActive)}`);
+          play(`turn_${firstActive}`);
+        } else {
+          screenWrite(`No player card selected to register.`);
         }
       }
-
-      if (sale1) {
-        seq.push("WORD_SALE");
-        if (sale1.nameClip && clips[sale1.nameClip]) {
-          seq.push(sale1.nameClip);
-        } else {
-          seq.push("BEEP");
-        }
-      }
-
-      if (sale2) {
-        seq.push("WORD_AND_AT_THE");
-        if (sale2.nameClip && clips[sale2.nameClip]) {
-          seq.push(sale2.nameClip);
-        } else {
-          seq.push("BEEP");
-        }
-      }
-
-      playClipSequence(seq, msg);
-      setStatus("Update the clearance and sale signs on the board.");
+      return;
     }
 
-    /***********************
-     * GAME FLOW
-     ***********************/
-    function startGameOn() {
-      if (!activePlayers.length) {
-        updateScreen("Choose at least one shopper color before pressing GAME ON.");
-        return;
-      }
-      state = STATE.RUNNING;
-      gameStarted = true;
-      setPowerLed(true);
-      initPlayers();
-      currentPlayerIndex = 0;
-      awaitingMovement = true;
-
-      // Greeting: “Hi Red! Hi Blue! Hi Green! Hi Yellow!” in order of active players.
-      const greetingOrder = ["Red", "Blue", "Green", "Yellow"].filter(c =>
-        activePlayers.includes(c)
-      );
-      const greetText = greetingOrder.length
-        ? "Hi " + greetingOrder.join("! Hi ") + "!"
-        : "Hi Shoppers!";
-      updateScreen(greetText + " Place your shoppers in the parking lots. Then wait for your turn.");
-      playClip("GAME_ON", greetText);
-
-      // First sales/clearance announcement
-      announceSalesAndClearance();
-
-      const first = getCurrentPlayerColor();
-      if (first) {
-        setStatus(
-          first +
-            "'s turn. On your turn: Press MOVE, follow the Voice, move your piece, then BUY/BANK if you can, then press MOVE again to end your turn."
-        );
-      }
-      setTurnLed(true);
+    // Normal turn flow - require that players are present
+    if(state.playerOrder.length === 0){
+      screenWrite("No players registered. Press GAME ON and register players.");
+      return;
     }
 
-    function issueMovementForCurrentPlayer() {
-      const color = getCurrentPlayerColor();
-      if (!color) return;
+    // Determine whose turn
+    const currentColor = state.playerOrder[state.currentTurnIndex] || state.playerOrder[0];
+    screenWrite(`${capitalize(currentColor)}... it's your turn.`);
+    play(`turn_${currentColor}`);
+    ledMove.classList.add('on');
 
+    // Choose a movement (4..12) and play the corresponding movement clip
+    const moveKeys = ['move_4','move_5','move_6','move_7','move_8','move_9','move_10','move_11','move_12'];
+    const chosenMoveKey = rnd(moveKeys);
+    setTimeout(()=>{
+      play(chosenMoveKey);
+      // Also write text for clarity
+      const numeric = chosenMoveKey.split('_')[1];
+      screenWrite(`${capitalize(currentColor)}...Move ${numeric.replace('move_', '')}.`);
+      log(`${capitalize(currentColor)} moves (${numeric}).`);
+
+      // Randomly offer special instructions (pizza, restroom, lights) - play corresponding phrase sometimes
       const r = Math.random();
-      if (r < 0.55) {
-        // Move N spaces (4–12 to match your available clips)
-        const spaces = Math.floor(Math.random() * 9) + 4; // 4..12 inclusive
-        const clipKey = "GO_" + spaces;
-        const msg =
-          color +
-          "... move " +
-          spaces +
-          " space" +
-          (spaces === 1 ? "" : "s") +
-          ". Remember: move along spaces, no diagonals, and enter stores through doors only.";
-        playClip(clipKey, msg);
-        setStatus(
-          "Try to move into a store to buy, or into the bank for cash. You don't have to use the full count when entering a store or bank."
-        );
+      if(r < 0.12){
+        play('pizza'); screenWrite(`${capitalize(currentColor)}... meet a friend at the pizza shop.`);
+      } else if(r < 0.22){
+        play('restroom'); screenWrite(`${capitalize(currentColor)}... go to the restroom.`);
+      } else if(r < 0.28){
+        play('lights_parking'); screenWrite(`${capitalize(currentColor)}... left your lights on in the parking lot.`);
+      }
+
+      // Advance turn
+      state.currentTurnIndex = (state.currentTurnIndex + 1) % state.playerOrder.length;
+      ledMove.classList.remove('on');
+    }, 900);
+  });
+
+  // REPEAT button: repeat last announcement
+  repeatBtn.addEventListener('click', ()=>{
+    const key = state.lastAnnouncement;
+    if(!key){
+      screenWrite("Nothing to repeat.");
+      return;
+    }
+    play(key);
+    screenWrite(`Repeating: ${key}`);
+  });
+
+  // Card selection / insertion
+  cardSelect.addEventListener('change', (ev)=> {
+    const val = ev.target.value;
+    cardHolder.textContent = val ? capitalize(val) : '—';
+    state.cardInsertedFor = val || null;
+  });
+
+  // List of store keys for random store selection in buy flow
+  const STORE_KEYS = [
+    "store_card_shop","store_book_store","store_camera_store","store_computer_store",
+    "store_department_store","store_drug_store","store_electronics_store","store_fashion_boutique",
+    "store_jewelry_store","store_kitchen_store","store_mens_shop","store_pet_shop",
+    "store_phone_store","store_record_store","store_shoe_store","store_sports_shop",
+    "store_sunglasses_boutique","store_toy_store"
+  ];
+
+  // BUY insertion flow: plays store clip then outcome clip
+  insertBuy.addEventListener('click', ()=>{
+    if(!state.cardInsertedFor){
+      screenWrite("Insert a player card first (select a color).");
+      return;
+    }
+    const player = state.cardInsertedFor;
+    screenWrite(`${capitalize(player)} inserts card into BUY slot.`);
+    // Choose a random store to 'enter'
+    const storeKey = rnd(STORE_KEYS);
+    setTimeout(()=>{
+      // Play the store clip (if present)
+      play(storeKey);
+      screenWrite(`${capitalize(player)} enters store (${storeKey.replace('store_','').replace(/_/g,' ')}).`);
+    }, 300);
+
+    // After store clip, play buy outcome
+    setTimeout(()=>{
+      // Weighted random for realistic outcomes
+      const r = Math.random();
+      if(r < 0.08){ play('long_line'); screenWrite("Long line — Try again later!"); }
+      else if(r < 0.14){ play('out_of_stock'); screenWrite("Sorry - out of stock, try again later."); }
+      else if(r < 0.25){ play('special_clearance'); screenWrite("Hey! You get a special clearance!"); }
+      else if(r < 0.40){ play('special_sale'); screenWrite("Hey! You get a special sale!"); }
+      else if(r < 0.60){ play('costs_5_more'); screenWrite("Your item costs $5 more."); }
+      else { play('ching'); screenWrite("Ching Ching! Purchase successful."); }
+    }, 1600);
+  });
+
+  // BANK insertion flow: plays bank outcomes (50/75/100 or closed)
+  insertBank.addEventListener('click', ()=>{
+    if(!state.cardInsertedFor){
+      screenWrite("Insert a player card first (select a color).");
+      return;
+    }
+    const player = state.cardInsertedFor;
+    screenWrite(`${capitalize(player)} inserts card into BANK slot.`);
+    setTimeout(()=>{
+      const r = Math.random();
+      if(r < 0.12){
+        play('bank_closed'); screenWrite("Bank closed.");
       } else {
-        // Special movement events from the directions
-        triggerSpecialEvent(color);
+        // give money (weighted)
+        const choice = Math.random();
+        if(choice < 0.5){ play('bank_50'); screenWrite("Take $50 from bank."); }
+        else if(choice < 0.85){ play('bank_75'); screenWrite("Take $75 from bank."); }
+        else { play('bank_100'); screenWrite("Take $100 from bank."); }
       }
-      awaitingMovement = false;
+    }, 700);
+  });
+
+  // Reset
+  resetBtn.addEventListener('click', ()=>{
+    Object.keys(state.players).forEach(k=>state.players[k]=false);
+    document.querySelectorAll('.color-swatch').forEach(sw=>sw.style.opacity='0.45');
+    state.playerOrder = [];
+    state.currentTurnIndex = 0;
+    state.lastAnnouncement = null;
+    state.cardInsertedFor = null;
+    cardSelect.value = '';
+    cardHolder.textContent = '—';
+    log("Reset game state.");
+    screenWrite("Game reset. Press GAME ON to start again.");
+    ledPower.classList.remove('on'); ledGame.classList.remove('on'); ledMove.classList.remove('on');
+  });
+
+  // announce next turn helper
+  function announceNextTurn(){
+    if(state.playerOrder.length === 0){
+      state.playerOrder = Object.keys(state.players).filter(k=>state.players[k]);
+      if(state.playerOrder.length === 0) state.playerOrder = ['red','blue','green','yellow'];
     }
+    const next = state.playerOrder[state.currentTurnIndex] || state.playerOrder[0];
+    play(`turn_${next}`);
+    screenWrite(`${capitalize(next)}...Your turn.`);
+  }
 
-    function triggerSpecialEvent(color) {
-      const events = [
-        "MEET_BANK",
-        "HUNGRY_PIZZA",
-        "RESTROOM",
-        "LIGHTS_PARKING",
-        "MOVE_AND_SEND_FRIEND_ARCADE",
-        "MOVE_AND_SEND_FRIEND_ICECREAM",
-        "MOVE_AND_SEND_FRIEND_ANYWHERE"
-      ];
-      const eventKey = events[Math.floor(Math.random() * events.length)];
-      let msg = "";
+  // beforeinstallprompt note
+  window.addEventListener('beforeinstallprompt', (e)=> {
+    e.preventDefault();
+    screenWrite("PWA install ready. Use browser menu to install.");
+    window.deferredPrompt = e;
+  });
 
-      switch (eventKey) {
-        case "MEET_BANK":
-          msg =
-            color +
-            "... Meet all shoppers at the bank. Everyone move to the bank space. Take turns inserting credit cards and follow the BANK button instructions.";
-          playClip("MEET_ALL_BANK", msg);
-          setStatus(
-            "Starting with " +
-              color +
-              ", each shopper uses BANK. The banker gives out $50, $75, or $100 as announced."
-          );
-          activePlayers.forEach(c => {
-            players[c].canBank = true;
-          });
-          rebuildPlayerPanel();
-          break;
-
-        case "HUNGRY_PIZZA":
-          msg =
-            color +
-            "... You're hungry. Meet a friend at the Pizza Shop. Move your shopper and any one opponent to the Pizza Shop.";
-          playClip("YOU_HUNGRY_PIZZA", msg);
-          setStatus(
-            "You can BUY pizza (choose Pizza) to unlock the bank again later. You don't get a peg for pizza."
-          );
-          break;
-
-        case "RESTROOM":
-          msg = color + "... Go to the restroom.";
-          playClip("RESTROOM", msg);
-          setStatus("Move your shopper to the restroom, then press MOVE to end your turn.");
-          break;
-
-        case "LIGHTS_PARKING":
-          msg = color + "... You left your lights on. Go to the parking lot.";
-          playClip("LIGHTS_PARKING_LOT", msg);
-          setStatus("Move back to your entrance parking lot, then press MOVE to end your turn.");
-          break;
-
-        case "MOVE_AND_SEND_FRIEND_ARCADE": {
-          const spaces = Math.floor(Math.random() * 12) + 1;
-          msg =
-            color +
-            "... Move " +
-            spaces +
-            " spaces and send a friend to the Arcade.";
-          updateScreen(msg);
-          setStatus(
-            "After moving, choose an opponent and move their shopper to the Arcade. They cannot buy or bank on your turn."
-          );
-          break;
-        }
-
-        case "MOVE_AND_SEND_FRIEND_ICECREAM": {
-          const spaces2 = Math.floor(Math.random() * 12) + 1;
-          msg =
-            color +
-            "... Move " +
-            spaces2 +
-            " spaces and send a friend for Ice Cream.";
-          updateScreen(msg);
-          setStatus(
-            "After moving, choose an opponent and move their shopper to the Ice Cream shop. They cannot buy or bank on your turn."
-          );
-          break;
-        }
-
-        case "MOVE_AND_SEND_FRIEND_ANYWHERE": {
-          const spaces3 = Math.floor(Math.random() * 12) + 1;
-          msg =
-            color +
-            "... Move " +
-            spaces3 +
-            " spaces and send a friend anywhere.";
-          updateScreen(msg);
-          setStatus(
-            "After moving, choose an opponent and move their shopper to any space (store or bank). They still cannot buy or bank on your turn."
-          );
-          break;
-        }
-      }
-    }
-
-    function endTurnAndAdvance() {
-      const color = getCurrentPlayerColor();
-      if (!color) return;
-
-      const p = players[color];
-      if (p.items >= targetItems) {
-        updateScreen(
-          color +
-            ", if your shopper is back at your own parking lot, you win the game!"
-        );
-        setStatus("Be the first to buy " + targetItems + " different items and return to your parking lot.");
-      } else {
-        currentPlayerIndex = (currentPlayerIndex + 1) % activePlayers.length;
-        const nextColor = getCurrentPlayerColor();
-        setStatus(
-          nextColor +
-            "'s turn. Press MOVE to start, follow the announcement, then MOVE again to end your turn."
-        );
-        updateScreen(nextColor + ", press MOVE to start your turn.");
-      }
-      awaitingMovement = true;
-    }
-
-    /***********************
-     * BUY & BANK LOGIC
-     ***********************/
-    function handleBuy() {
-      if (state !== STATE.RUNNING) {
-        updateScreen("Press GAME ON to start a game first.");
-        return;
-      }
-      const color = getCurrentPlayerColor();
-      if (!color) return;
-      const p = players[color];
-      const purchaseType = purchaseTypeSelect.value;
-
-      const baseRoll = Math.random();
-      const extraFiveRoll = Math.random();
-
-      let msg = "";
-
-      if (purchaseType === "pizza") {
-        if (baseRoll < 0.25) {
-          msg =
-            color +
-            "... Long line at the Pizza Shop. Try again later! Move out and back in on a future turn to try again.";
-          playClip("LONG_LINE", msg);
-        } else {
-          let extra = "";
-          if (extraFiveRoll < 0.25) {
-            extra =
-              " Today your pizza costs $5 more than usual. Pay $10 instead of $5.";
-            playClip("COSTS_5_MORE", color + "... your pizza costs $5 more.");
-          } else {
-            extra = " Pay $5 for pizza.";
-          }
-
-          msg =
-            color +
-            "... Ching ching! You bought pizza. " +
-            extra +
-            " You do not get a peg, but now you may go back to the bank on a later turn.";
-          playClip("CHING_CHING", msg);
-          p.canBank = true;
-          p.hasJustBought = true;
-        }
-        rebuildPlayerPanel();
-        return;
-      }
-
-      if (baseRoll < 0.15) {
-        const choice = Math.random() < 0.5 ? "LONG_LINE" : "OUT_OF_STOCK";
-        const clipKey = choice === "LONG_LINE" ? "LONG_LINE" : "OUT_OF_STOCK";
-        msg =
-          color +
-          "... " +
-          (choice === "LONG_LINE"
-            ? "Long line, try again later!"
-            : "I'm sorry, we're out of stock. Try again later!");
-        playClip(clipKey, msg);
-        setStatus(
-          "On your next turn, if you are still in this store, you may move out and right back in to try again."
-        );
-      } else if (baseRoll < 0.6) {
-        msg =
-          color +
-          "... Ching ching! Check your shopping list card for the item price. Pay regular price unless there's a sale or clearance sign in this store.";
-        playClip("CHING_CHING", msg);
-        handleSuccessfulItemPurchase(p, null, extraFiveRoll, color);
-      } else if (baseRoll < 0.8) {
-        msg =
-          color +
-          "... Hey! You get a special sale! Pay the special sale price shown on your card.";
-        playClip("SPECIAL_SALE", msg);
-        handleSuccessfulItemPurchase(p, "sale", extraFiveRoll, color);
-      } else {
-        msg =
-          color +
-          "... Hey! You get a special clearance! Pay the special clearance price shown on your card.";
-        playClip("SPECIAL_CLEARANCE", msg);
-        handleSuccessfulItemPurchase(p, "clearance", extraFiveRoll, color);
-      }
-
-      rebuildPlayerPanel();
-    }
-
-    function handleSuccessfulItemPurchase(player, specialType, extraFiveRoll, color) {
-      player.items += 1;
-      player.canBank = true;
-      player.hasJustBought = true;
-
-      if (extraFiveRoll < 0.2) {
-        const msg2 =
-          color +
-          "... Your item costs $5 more. Whatever you would have paid, add $5 to the total.";
-        playClip("COSTS_5_MORE", msg2);
-        setStatus(
-          "The Voice always has the final word. Consult your shopping list and adjust the price by +$5."
-        );
-      } else {
-        if (specialType === "sale") {
-          setStatus(
-            "Pay the special sale price on your list. If there was a clearance sign, you still pay the sale price because the Voice said 'special sale'."
-          );
-        } else if (specialType === "clearance") {
-          setStatus(
-            "Pay the special clearance price on your list. If there was a sale sign, you pay the lower clearance price."
-          );
-        } else {
-          setStatus(
-            "Pay regular / sale / clearance price based on the signs in the store, as shown on your shopping list card."
-          );
-        }
-      }
-    }
-
-    function handleBank() {
-      if (state !== STATE.RUNNING) {
-        updateScreen("Press GAME ON to start a game first.");
-        return;
-      }
-      const color = getCurrentPlayerColor();
-      if (!color) return;
-      const p = players[color];
-
-      if (!p.canBank) {
-        const msg =
-          color +
-          "... Bank closed. You must buy something before you can withdraw cash again.";
-        playClip("BANK_CLOSED", msg);
-        setStatus(
-          "Remember: once you get money from the bank, you can't go back until you buy an item or pizza."
-        );
-        return;
-      }
-
-      const roll = Math.random();
-      let amount = 50;
-      let clipKey = "BANK_50";
-
-      if (roll < 0.33) {
-        amount = 50;
-        clipKey = "BANK_50";
-      } else if (roll < 0.66) {
-        amount = 75;
-        clipKey = "BANK_75";
-      } else {
-        amount = 100;
-        clipKey = "BANK_100";
-      }
-
-      const msg =
-        color +
-        "... Take $" +
-        amount +
-        " from the bank. The banker should count out the money to you.";
-      playClip(clipKey, msg);
-      setStatus(
-        "After withdrawing, you must buy something before the bank will serve you again."
-      );
-
-      p.canBank = false;
-      p.hasJustBought = false;
-      rebuildPlayerPanel();
-    }
-
-    /***********************
-     * BUTTON HANDLERS
-     ***********************/
-    document.getElementById("btn-game-on").addEventListener("click", () => {
-      startGameOn();
+  // register service worker
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').then(()=> {
+      log("Service Worker registered.");
+    }).catch(err=> {
+      log("SW registration failed: " + err);
     });
+  }
 
-    document.getElementById("btn-move").addEventListener("click", () => {
-      if (state !== STATE.RUNNING) {
-        updateScreen("Press GAME ON to start a new game.");
-        return;
-      }
-
-      const color = getCurrentPlayerColor();
-      if (!color) {
-        updateScreen("No shoppers selected. Choose colors and press GAME ON.");
-        return;
-      }
-
-      if (awaitingMovement) {
-        updateScreen(color + ", it's your turn. Listen carefully!");
-        issueMovementForCurrentPlayer();
-      } else {
-        endTurnAndAdvance();
-      }
-    });
-
-    document.getElementById("btn-repeat").addEventListener("click", () => {
-      if (lastClipKey) {
-        playClip(lastClipKey, "Repeating: " + lastMessage);
-      } else {
-        updateScreen("Nothing to repeat yet.");
-      }
-    });
-
-    document.getElementById("btn-buy").addEventListener("click", () => {
-      handleBuy();
-    });
-
-    document.getElementById("btn-bank").addEventListener("click", () => {
-      handleBank();
-    });
-
-    document.getElementById("btn-long-game").addEventListener("click", () => {
-      targetItems = targetItems === 6 ? 10 : 6;
-      updateScreen(
-        "Shop till you drop! You must now buy " +
-          targetItems +
-          " different items and return to your parking lot to win."
-      );
-      setStatus(
-        targetItems === 6
-          ? "Standard game: first to 6 items + parking lot wins."
-          : "Long game: first to 10 items + parking lot wins."
-      );
-    });
-
-    // PWA: register service worker
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker
-          .register("sw.js")
-          .catch(err => console.error("SW registration failed:", err));
-      });
-    }
   </script>
 </body>
 </html>
