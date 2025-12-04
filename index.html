@@ -430,43 +430,54 @@
      * Plug in your real audio file paths here.
      ***********************/
     const clips = {
-      GAME_ON: "audio/001-game_on.mp3",
-      TRY_AGAIN_LATER: "audio/002-try_again_later.mp3",
-      // simple generic clips you can remap:
-      ATTENTION_SHOPPERS: "audio/003-attention_shoppers.mp3",
-      MEET_ALL_BANK: "audio/004-meet_all_at_bank.mp3",
-      YOU_HUNGRY_PIZZA: "audio/005-you_hungry_pizza.mp3",
-      RESTROOM: "audio/006-go_restroom.mp3",
-      LIGHTS_PARKING_LOT: "audio/007-lights_on_parking_lot.mp3",
+  GAME_ON: "audio/001_game_on_hi_colors.mp3",
+  TRY_AGAIN_LATER: "audio/003_try_again_later.mp3",
 
-      // movement numbers (1–12)
-      GO_1: "audio/010-go-1.mp3",
-      GO_2: "audio/011-go-2.mp3",
-      GO_3: "audio/012-go-3.mp3",
-      GO_4: "audio/013-go-4.mp3",
-      GO_5: "audio/014-go-5.mp3",
-      GO_6: "audio/015-go-6.mp3",
-      GO_7: "audio/016-go-7.mp3",
-      GO_8: "audio/017-go-8.mp3",
-      GO_9: "audio/018-go-9.mp3",
-      GO_10: "audio/019-go-10.mp3",
-      GO_11: "audio/020-go-11.mp3",
-      GO_12: "audio/021-go-12.mp3",
+  // phrase / word clips from Audio Files
+  ATTENTION_SHOPPERS: "audio/002_attention_mall_shoppers.mp3",
+  MEET_ALL_BANK: "audio/008_meet_all_at_bank.mp3",
+  YOU_HUNGRY_PIZZA: "audio/0202_hungry_meet_friend_pizza_shop.mp3",
+  RESTROOM: "audio/0203_go_to_restroom.mp3",
+  LIGHTS_PARKING_LOT: "audio/0204_left_lights_on_parking_lot.mp3",
+  WORD_AND_AT_THE: "audio/004_and_at_the.mp3",
+  WORD_CLEARANCE: "audio/007_clearance_at_the.mp3",
+  WORD_SALE: "audio/006_sale_at_the.mp3",
+  BEEP: "audio/005_beep.mp3",
 
-      // sample sale/clearance/misc
-      SALE_SHORT_CIRCUIT: "audio/050-sale-short-circuit.mp3",
-      CLEARANCE_YUPPY_PUPPIES: "audio/051-clearance-yuppy-puppies.mp3",
-      CHING_CHING: "audio/060-ching-ching.mp3",
-      SPECIAL_SALE: "audio/061-special-sale.mp3",
-      SPECIAL_CLEARANCE: "audio/062-special-clearance.mp3",
-      LONG_LINE: "audio/063-long-line-try-again-later.mp3",
-      OUT_OF_STOCK: "audio/064-out-of-stock.mp3",
-      COSTS_5_MORE: "audio/065-costs-5-more.mp3",
-      BANK_50: "audio/070-bank-take-50.mp3",
-      BANK_75: "audio/071-bank-take-75.mp3",
-      BANK_100: "audio/072-bank-take-100.mp3",
-      BANK_CLOSED: "audio/073-bank-closed.mp3"
-    };
+  // movement numbers from Audio Files (4–12)
+  GO_4: "audio/1003_move_4_spaces.mp3",
+  GO_5: "audio/1005_move_5_spaces.mp3",
+  GO_6: "audio/1006_move_6_spaces.mp3",
+  GO_7: "audio/1007_move_7_spaces.mp3",
+  GO_8: "audio/1008_move_8_spaces.mp3",
+  GO_9: "audio/1009_move_9_spaces.mp3",
+  GO_10: "audio/1010_move_10_spaces.mp3",
+  GO_11: "audio/1011_move_11_spaces.mp3",
+  GO_12: "audio/1012_move_12_spaces.mp3",
+
+  // sale / clearance / bank from Audio Files
+  CHING_CHING: "audio/0301_ching_ching_cash_register.mp3",
+  SPECIAL_SALE: "audio/0302_hey_you_get_a_special_sale.mp3",
+  SPECIAL_CLEARANCE: "audio/0303_hey_you_get_a_special_clearance.mp3",
+  LONG_LINE: "audio/0304_long_line_try_again_later.mp3",
+  OUT_OF_STOCK: "audio/0305_sorry_out_of_stock_try_again_later.mp3",
+  COSTS_5_MORE: "audio/0306_your_item_costs_5_more.mp3",
+  BANK_50: "audio/0401_take_50_from_bank.mp3",
+  BANK_75: "audio/0402_take_75_from_bank.mp3",
+  BANK_100: "audio/0403_take_100_from_bank.mp3",
+  BANK_CLOSED: "audio/0404_bank_closed.mp3",
+
+  // extra movement clips you had that are NOT in Audio Files.csv
+  // (kept so your 1–12 movement logic still works)
+  GO_1: "audio/010-go-1.mp3",
+  GO_2: "audio/011-go-2.mp3",
+  GO_3: "audio/012-go-3.mp3",
+
+  // the two themed clips you already had
+  SALE_SHORT_CIRCUIT: "audio/050-sale-short-circuit.mp3",
+  CLEARANCE_YUPPY_PUPPIES: "audio/051-clearance-yuppy-puppies.mp3"
+};
+
 
     let lastAudio = null;
     let lastClipKey = null;
