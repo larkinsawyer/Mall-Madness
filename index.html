@@ -738,6 +738,27 @@ document.querySelectorAll(".color-chip").forEach(chip => {
       setTurnLed(true);
     }
 
+const STORE_AUDIO_MAP = {
+  "Card Shop": "CARD_SHOP",
+  "Book Store": "BOOK_STORE",
+  "Camera Store": "CAMERA_STORE",
+  "Computer Store": "COMPUTER_STORE",
+  "Department Store": "DEPARTMENT_STORE",
+  "Drug Store": "DRUG_STORE",
+  "Electronics": "ELECTRONICS_STORE",
+  "Fashion Boutique": "FASHION_BOUTIQUE",
+  "Jewelry Store": "JEWELRY_STORE",
+  "Kitchen Store": "KITCHEN_STORE",
+  "Men's Shop": "MENS_SHOP",
+  "Pet Shop": "PET_SHOP",
+  "Phone Store": "PHONE_STORE",
+  "Record Store": "RECORD_STORE",
+  "Shoe Store": "SHOE_STORE",
+  "Sports Shop": "SPORTS_SHOP",
+  "Sunglasses Boutique": "SUNGLASSES_BOUTIQUE",
+  "Toy Store": "TOY_STORE"
+};
+    
     function announceSalesAndClearance() {
       // Placeholder store names; you can wire real store-specific audio clips here.
       const stores = [
@@ -789,7 +810,19 @@ const sequence = [
   "AND_AT_THE"     // "and at the"
 ];
 
-playClipSequence(sequence, msg);
+      // Build final audio sequence: phrase words + each store name clip
+const audioSequence = [
+  "ATTENTION_SHOPPERS",
+  "CLEARANCE",
+  STORE_AUDIO_MAP[clearanceStore],
+  "SALE",
+  STORE_AUDIO_MAP[sale1],
+  "AND_AT_THE",
+  STORE_AUDIO_MAP[sale2]
+];
+
+playClipSequence(audioSequence, msg);
+
     }
 
 function issueMovementForCurrentPlayer() {
