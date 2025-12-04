@@ -424,7 +424,7 @@
     </div>
   </div>
 
-  <script>
+   <script>
     /***********************
      * AUDIO CLIP MAPPING
      * Plug in your real audio file paths here.
@@ -432,7 +432,8 @@
     const clips = {
       GAME_ON: "audio/001_game_on_hi_colors.mp3",
       TRY_AGAIN_LATER: "audio/003_try_again_later.mp3",
-      // simple generic clips you can remap:
+
+      // phrase / word clips
       ATTENTION_SHOPPERS: "audio/002_attention_mall_shoppers.mp3",
       MEET_ALL_BANK: "audio/008-meet_all_at_bank.mp3",
       YOU_HUNGRY_PIZZA: "audio/0202_hungry_meet_friend_pizza_shop.mp3",
@@ -441,8 +442,8 @@
       WORD_AND_AT_THE: "audio/004_and_at_the.mp3",
       WORD_CLEARANCE: "audio/007_clearance_at_the.mp3",
       WORD_SALE: "audio/006_sale_at_the.mp3",
-      BEEP: "audio/005_beep.mp3"
-      
+      BEEP: "audio/005_beep.mp3",
+
       // movement numbers (4–12)
       GO_4: "audio/1003_move_4_spaces.mp3",
       GO_5: "audio/1005_move_5_spaces.mp3",
@@ -454,7 +455,7 @@
       GO_11: "audio/1011_move_11_spaces.mp3",
       GO_12: "audio/1012_move_12_spaces.mp3",
 
-      // sample sale/clearance/misc
+      // sale/clearance/bank
       CHING_CHING: "audio/0301_ching_ching_cash_register.mp3",
       SPECIAL_SALE: "audio/0302_hey_you_get_a_special_sale.mp3",
       SPECIAL_CLEARANCE: "audio/0303_hey_you_get_a_special_clearance.mp3",
@@ -465,6 +466,11 @@
       BANK_75: "audio/0402_take_75_from_bank.mp3",
       BANK_100: "audio/0403_take_100_from_bank.mp3",
       BANK_CLOSED: "audio/0404_bank_closed.mp3"
+
+      // If you add store-name clips later, put them here, e.g.:
+      // STORE_CARD_SHOP: "audio/store_card_shop.mp3",
+      // SPECIAL_SALE_CARD_SHOP: "audio/sale_card_shop.mp3",
+      // SPECIAL_CLEARANCE_CARD_SHOP: "audio/clearance_card_shop.mp3",
     };
 
     let lastAudio = null;
@@ -492,6 +498,38 @@
       if (labelText) {
         updateScreen(labelText);
       }
+    }
+
+    /********************************************************
+     * STORE DEFINITIONS + STATUS
+     ********************************************************/
+    const STORES = [
+      { id: "CARD_SHOP",            name: "Card Shop",            nameClip: null, saleClip: null, clearanceClip: null },
+      { id: "BOOK_STORE",           name: "Book Store",           nameClip: null, saleClip: null, clearanceClip: null },
+      { id: "CAMERA_STORE",         name: "Camera Store",         nameClip: null, saleClip: null, clearanceClip: null },
+      { id: "COMPUTER_STORE",       name: "Computer Store",       nameClip: null, saleClip: null, clearanceClip: null },
+      { id: "DEPARTMENT_STORE",     name: "Department Store",     nameClip: null, saleClip: null, clearanceClip: null },
+      { id: "DRUG_STORE",           name: "Drug Store",           nameClip: null, saleClip: null, clearanceClip: null },
+      { id: "ELECTRONICS_STORE",    name: "Electronics Store",    nameClip: null, saleClip: null, clearanceClip: null },
+      { id: "FASHION_BOUTIQUE",     name: "Fashion Boutique",     nameClip: null, saleClip: null, clearanceClip: null },
+      { id: "JEWELRY_STORE",        name: "Jewelry Store",        nameClip: null, saleClip: null, clearanceClip: null },
+      { id: "KITCHEN_STORE",        name: "Kitchen Store",        nameClip: null, saleClip: null, clearanceClip: null },
+      { id: "MENS_SHOP",            name: "Men's Shop",           nameClip: null, saleClip: null, clearanceClip: null },
+      { id: "PET_SHOP",             name: "Pet Shop",             nameClip: null, saleClip: null, clearanceClip: null },
+      { id: "PHONE_STORE",          name: "Phone Store",          nameClip: null, saleClip: null, clearanceClip: null },
+      { id: "RECORD_STORE",         name: "Record Store",         nameClip: null, saleClip: null, clearanceClip: null },
+      { id: "SHOE_STORE",           name: "Shoe Store",           nameClip: null, saleClip: null, clearanceClip: null },
+      { id: "SPORTS_SHOP",          name: "Sports Shop",          nameClip: null, saleClip: null, clearanceClip: null },
+      { id: "SUNGLASSES_BOUTIQUE",  name: "Sunglasses Boutique",  nameClip: null, saleClip: null, clearanceClip: null },
+      { id: "TOY_STORE",            name: "Toy Store",            nameClip: null, saleClip: null, clearanceClip: null }
+    ];
+
+    const storeStatus = {}; // storeId -> "sale" | "clearance" | null
+
+    function resetStoreStatuses() {
+      STORES.forEach(store => {
+        storeStatus[store.id] = null;
+      });
     }
 
     /***********************
@@ -626,6 +664,85 @@
     });
 
     /***********************
+     * SALES / CLEARANCE ANNOUNCEMENT
+     ***********************/
+    async function playClipSequence(keys, screenText) {
+      if (screenText) {
+        updateScreen(screenText);
+      }
+
+      for (const key of keys) {
+        if (!key) continue;
+        const src = clips[key];
+        if (!src) continue;
+
+        await new Promise(resolve => {
+          const audio = new Audio(src);
+          lastAudio = audio;
+          lastClipKey = key;
+          audio.addEventListener("ended", resolve);
+          audio.addEventListener("error", resolve);
+          audio.play().catch(() => resolve());
+        });
+      }
+    }
+
+    function announceSalesAndClearance() {
+      const shuffled = shuffle(STORES);
+      const clearanceStore = shuffled[0];
+      const sale1 = shuffled[1];
+      const sale2 = shuffled[2];
+
+      resetStoreStatuses();
+      if (clearanceStore) storeStatus[clearanceStore.id] = "clearance";
+      if (sale1)          storeStatus[sale1.id]          = "sale";
+      if (sale2)          storeStatus[sale2.id]          = "sale";
+
+      const msg =
+        "Attention mall shoppers! Clearance at " +
+        (clearanceStore ? clearanceStore.name : "a mystery store") +
+        ". Sales at " +
+        (sale1 ? sale1.name : "—") +
+        " and " +
+        (sale2 ? sale2.name : "—") +
+        ". Move the signs.";
+
+      const seq = [];
+
+      seq.push("ATTENTION_SHOPPERS");
+
+      if (clearanceStore) {
+        seq.push("WORD_CLEARANCE");
+        if (clearanceStore.nameClip && clips[clearanceStore.nameClip]) {
+          seq.push(clearanceStore.nameClip);
+        } else {
+          seq.push("BEEP");
+        }
+      }
+
+      if (sale1) {
+        seq.push("WORD_SALE");
+        if (sale1.nameClip && clips[sale1.nameClip]) {
+          seq.push(sale1.nameClip);
+        } else {
+          seq.push("BEEP");
+        }
+      }
+
+      if (sale2) {
+        seq.push("WORD_AND_AT_THE");
+        if (sale2.nameClip && clips[sale2.nameClip]) {
+          seq.push(sale2.nameClip);
+        } else {
+          seq.push("BEEP");
+        }
+      }
+
+      playClipSequence(seq, msg);
+      setStatus("Update the clearance and sale signs on the board.");
+    }
+
+    /***********************
      * GAME FLOW
      ***********************/
     function startGameOn() {
@@ -652,9 +769,6 @@
 
       // First sales/clearance announcement
       announceSalesAndClearance();
-      playClip("WORD_SALE", saleText);
-      playClip("WORD_AND_AT_THE", andatTEXT);
-      playClip("WORD_CLEARANCE", clearanceText);
 
       const first = getCurrentPlayerColor();
       if (first) {
@@ -666,255 +780,14 @@
       setTurnLed(true);
     }
 
-    function announceSalesAndClearance() {
-      // Placeholder store names; you can wire real store-specific audio clips here.
-      const STORES = [
-  {
-    id: "CARD_SHOP",
-    name: "Card Shop",
-    nameClip: "STORE_CARD_SHOP",     // optional
-    saleClip: "SPECIAL_SALE_CARD_SHOP",
-    clearanceClip: "SPECIAL_CLEARANCE_CARD_SHOP"
-  },
-  {
-    id: "BOOK_STORE",
-    name: "Book Store",
-    nameClip: "STORE_BOOK_STORE",
-    saleClip: "SPECIAL_SALE_BOOK_STORE",
-    clearanceClip: "SPECIAL_CLEARANCE_BOOK_STORE"
-  },
-  {
-    id: "CAMERA_STORE",
-    name: "Camera Store",
-    nameClip: "STORE_CAMERA_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "COMPUTER_STORE",
-    name: "Computer Store",
-    nameClip: "STORE_COMPUTER_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "DEPARTMENT_STORE",
-    name: "Department Store",
-    nameClip: "STORE_DEPARTMENT_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "DRUG_STORE",
-    name: "Drug Store",
-    nameClip: "STORE_DRUG_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "ELECTRONICS_STORE",
-    name: "Electronics Store",
-    nameClip: "STORE_ELECTRONICS_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "FASHION_BOUTIQUE",
-    name: "Fashion Boutique",
-    nameClip: "STORE_FASHION_BOUTIQUE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "JEWELRY_STORE",
-    name: "Jewelry Store",
-    nameClip: "STORE_JEWELRY_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "KITCHEN_STORE",
-    name: "Kitchen Store",
-    nameClip: "STORE_KITCHEN_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "MENS_SHOP",
-    name: "Men's Shop",
-    nameClip: "STORE_MENS_SHOP",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "PET_SHOP",
-    name: "Pet Shop",
-    nameClip: "STORE_PET_SHOP",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "PHONE_STORE",
-    name: "Phone Store",
-    nameClip: "STORE_PHONE_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "RECORD_STORE",
-    name: "Record Store",
-    nameClip: "STORE_RECORD_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "SHOE_STORE",
-    name: "Shoe Store",
-    nameClip: "STORE_SHOE_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "SPORTS_SHOP",
-    name: "Sports Shop",
-    nameClip: "STORE_SPORTS_SHOP",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "SUNGLASSES_BOUTIQUE",
-    name: "Sunglasses Boutique",
-    nameClip: "STORE_SUNGLASSES_BOUTIQUE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "TOY_STORE",
-    name: "Toy Store",
-    nameClip: "STORE_TOY_STORE",
-    saleClip: null,
-    clearanceClip: null
-  }
-];
-
-  // Text for the screen
-  const shuffled = shuffle(STORES);
-  const clearanceStore = shuffled[0];
-  const sale1 = shuffled[1];
-  const sale2 = shuffled[2];
-
-  resetStoreStatuses();
-
-  storeStatus[clearanceStore.id] = "clearance";
-  storeStatus[sale1.id] = "sale";
-  storeStatus[sale2.id] = "sale";
-
- const msg =
-    "Attention mall shoppers! Clearance at " +
-    clearanceStore.name +
-    ". Sales at " +
-    sale1.name +
-    " and " +
-    sale2.name +
-    ". Move the signs.";
-
-  // Build an audio sequence
-  const seq = [];
-
-  seq.push("ATTENTION_SHOPPERS");
-
-  seq.push("WORD_CLEARANCE");
-  if (clearanceStore.nameClip) seq.push(clearanceStore.nameClip);
-  else seq.push("BEEP");
-
-  seq.push("WORD_SALE");
-  if (sale1.nameClip) seq.push(sale1.nameClip);
-  else seq.push("BEEP");
-
-  seq.push("WORD_AND_AT_THE");
-  if (sale2.nameClip) seq.push(sale2.nameClip);
-  else seq.push("BEEP");
-
-  playClipSequence(seq, msg);
-}
-    
-  const sequence = [];
-
-  // Intro
-  sequence.push("ATTENTION_SHOPPERS");
-
-  // "Clearance" + clearance store name (if clip exists)
-  if (clearanceStore) {
-    sequence.push("WORD_CLEARANCE");
-    if (clearanceStore.nameClip) {
-      sequence.push(clearanceStore.nameClip);
-    }
-  }
-
-  // "Sale" + first sale store
-  if (sale1) {
-    sequence.push("WORD_SALE");
-    if (sale1.nameClip) {
-      sequence.push(sale1.nameClip);
-    }
-  }
-
-  // "and at the" + second sale store
-  if (sale2) {
-    sequence.push("WORD_AND_AT_THE");
-    if (sale2.nameClip) {
-      sequence.push(sale2.nameClip);
-    }
-  }
-
-  // Show text + play stitched audio
-  playClipSequence(sequence, msg);
-
-  // Optional: update internal storeStatus if you're tracking signs
- function resetStoreStatuses() {
-  STORES.forEach(store => {
-    storeStatus[store.id] = null;
-  });
-}
-
-  resetStoreStatuses();
-  if (clearanceStore) storeStatus[clearanceStore.id] = "clearance";
-  if (sale1) storeStatus[sale1.id] = "sale";
-  if (sale2) storeStatus[sale2.id] = "sale";
-
-  setStatus("Update the clearance and sale signs on the board.");
-}
-
-async function playClipSequence(keys, screenText) {
-  if (screenText) {
-    updateScreen(screenText);
-  }
-
-  for (const key of keys) {
-    if (!key) continue; // skip null/undefined
-    const src = clips[key];
-    if (!src) continue;
-
-    await new Promise(resolve => {
-      const audio = new Audio(src);
-      lastAudio = audio;
-      lastClipKey = key;
-      audio.addEventListener("ended", resolve);
-      audio.addEventListener("error", resolve);
-      audio.play().catch(() => resolve());
-    });
-  }
-}
-
     function issueMovementForCurrentPlayer() {
       const color = getCurrentPlayerColor();
       if (!color) return;
 
-      // Decide between numeric movement vs. special location
       const r = Math.random();
       if (r < 0.55) {
-        // Move N spaces
-        const spaces = Math.floor(Math.random() * 12) + 4; // 4–12
+        // Move N spaces (4–12 to match your available clips)
+        const spaces = Math.floor(Math.random() * 9) + 4; // 4..12 inclusive
         const clipKey = "GO_" + spaces;
         const msg =
           color +
@@ -931,7 +804,7 @@ async function playClipSequence(keys, screenText) {
         // Special movement events from the directions
         triggerSpecialEvent(color);
       }
-      awaitingMovement = false; // now we're in the “take actions” phase
+      awaitingMovement = false;
     }
 
     function triggerSpecialEvent(color) {
@@ -958,7 +831,6 @@ async function playClipSequence(keys, screenText) {
               color +
               ", each shopper uses BANK. The banker gives out $50, $75, or $100 as announced."
           );
-          // For fairness, after this, everyone may bank again, even if they already went.
           activePlayers.forEach(c => {
             players[c].canBank = true;
           });
@@ -995,7 +867,6 @@ async function playClipSequence(keys, screenText) {
             spaces +
             " spaces and send a friend to the Arcade.";
           updateScreen(msg);
-          // You can optionally map a specific clip here
           setStatus(
             "After moving, choose an opponent and move their shopper to the Arcade. They cannot buy or bank on your turn."
           );
@@ -1036,7 +907,6 @@ async function playClipSequence(keys, screenText) {
       const color = getCurrentPlayerColor();
       if (!color) return;
 
-      // Check win condition: 6 (or 10) items and at parking lot (physically)
       const p = players[color];
       if (p.items >= targetItems) {
         updateScreen(
@@ -1044,9 +914,7 @@ async function playClipSequence(keys, screenText) {
             ", if your shopper is back at your own parking lot, you win the game!"
         );
         setStatus("Be the first to buy " + targetItems + " different items and return to your parking lot.");
-        // You can stop further turns if you want by setting state = STATE.IDLE
       } else {
-        // Next player
         currentPlayerIndex = (currentPlayerIndex + 1) % activePlayers.length;
         const nextColor = getCurrentPlayerColor();
         setStatus(
@@ -1069,24 +937,20 @@ async function playClipSequence(keys, screenText) {
       const color = getCurrentPlayerColor();
       if (!color) return;
       const p = players[color];
-      const purchaseType = purchaseTypeSelect.value; // "item" or "pizza"
+      const purchaseType = purchaseTypeSelect.value;
 
-      // Random outcome pieces
       const baseRoll = Math.random();
       const extraFiveRoll = Math.random();
 
       let msg = "";
 
       if (purchaseType === "pizza") {
-        // Pizza is special: never discounted, sometimes costs $5 more, no peg.
         if (baseRoll < 0.25) {
-          // can't buy pizza this time
           msg =
             color +
             "... Long line at the Pizza Shop. Try again later! Move out and back in on a future turn to try again.";
           playClip("LONG_LINE", msg);
         } else {
-          // successful pizza
           let extra = "";
           if (extraFiveRoll < 0.25) {
             extra =
@@ -1102,16 +966,14 @@ async function playClipSequence(keys, screenText) {
             extra +
             " You do not get a peg, but now you may go back to the bank on a later turn.";
           playClip("CHING_CHING", msg);
-          p.canBank = true; // pizza “unlocks” the bank
+          p.canBank = true;
           p.hasJustBought = true;
         }
         rebuildPlayerPanel();
         return;
       }
 
-      // Regular store item (with peg)
       if (baseRoll < 0.15) {
-        // Out of stock / long line
         const choice = Math.random() < 0.5 ? "LONG_LINE" : "OUT_OF_STOCK";
         const clipKey = choice === "LONG_LINE" ? "LONG_LINE" : "OUT_OF_STOCK";
         msg =
@@ -1124,23 +986,19 @@ async function playClipSequence(keys, screenText) {
         setStatus(
           "On your next turn, if you are still in this store, you may move out and right back in to try again."
         );
-        // Does NOT count as purchase; bank rules unaffected
       } else if (baseRoll < 0.6) {
-        // Standard “Ching ching” buy
         msg =
           color +
           "... Ching ching! Check your shopping list card for the item price. Pay regular price unless there's a sale or clearance sign in this store.";
         playClip("CHING_CHING", msg);
-        handleSuccessfulItemPurchase(p, /*specialType=*/ null, extraFiveRoll, color);
+        handleSuccessfulItemPurchase(p, null, extraFiveRoll, color);
       } else if (baseRoll < 0.8) {
-        // Special sale
         msg =
           color +
           "... Hey! You get a special sale! Pay the special sale price shown on your card.";
         playClip("SPECIAL_SALE", msg);
         handleSuccessfulItemPurchase(p, "sale", extraFiveRoll, color);
       } else {
-        // Special clearance
         msg =
           color +
           "... Hey! You get a special clearance! Pay the special clearance price shown on your card.";
@@ -1152,13 +1010,11 @@ async function playClipSequence(keys, screenText) {
     }
 
     function handleSuccessfulItemPurchase(player, specialType, extraFiveRoll, color) {
-      // Increase peg count
       player.items += 1;
-      player.canBank = true; // after buying, they may bank again
+      player.canBank = true;
       player.hasJustBought = true;
 
       if (extraFiveRoll < 0.2) {
-        // “Your item costs $5 more!”
         const msg2 =
           color +
           "... Your item costs $5 more. Whatever you would have paid, add $5 to the total.";
@@ -1193,7 +1049,6 @@ async function playClipSequence(keys, screenText) {
       const p = players[color];
 
       if (!p.canBank) {
-        // “Bank closed” rule: you must buy something (or pizza) before next withdrawal.
         const msg =
           color +
           "... Bank closed. You must buy something before you can withdraw cash again.";
@@ -1204,7 +1059,6 @@ async function playClipSequence(keys, screenText) {
         return;
       }
 
-      // If allowed, choose how much the bank gives
       const roll = Math.random();
       let amount = 50;
       let clipKey = "BANK_50";
@@ -1230,7 +1084,6 @@ async function playClipSequence(keys, screenText) {
         "After withdrawing, you must buy something before the bank will serve you again."
       );
 
-      // After a successful withdrawal, lock banking until they buy again
       p.canBank = false;
       p.hasJustBought = false;
       rebuildPlayerPanel();
@@ -1256,11 +1109,9 @@ async function playClipSequence(keys, screenText) {
       }
 
       if (awaitingMovement) {
-        // Start of turn
         updateScreen(color + ", it's your turn. Listen carefully!");
         issueMovementForCurrentPlayer();
       } else {
-        // End of turn
         endTurnAndAdvance();
       }
     });
