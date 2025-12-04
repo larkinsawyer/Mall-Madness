@@ -1,12 +1,11 @@
 {
-  "name": "Mall Madness Computer",
+  "name": "Mall Madness",
   "short_name": "Mall Madness",
-  "description": "A recreation of the 1989 Mall Madness electronic computer.",
   "start_url": "./index.html",
-  "scope": "./",
   "display": "standalone",
-  "background_color": "#222222",
-  "theme_color": "#ff3c7f",
+  "background_color": "#602a7a",
+  "theme_color": "#ff4fa3",
+
   "icons": [
     {
       "src": "icons/icon-192.png",
@@ -17,6 +16,12 @@
       "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "src": "icons/icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
