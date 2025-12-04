@@ -767,8 +767,8 @@ playClipSequence(sequence, msg);
       // Decide between numeric movement vs. special location
       const r = Math.random();
       if (r < 0.55) {
-        // Move N spaces (still using GO_1..GO_12; you now have real audio for GO_4–GO_12)
-        const spaces = Math.floor(Math.random() * 12) + 1; // 4–12
+        // Move N spaces (using GO_4..GO_12)
+        const spaces = Math.floor(Math.random() * 9) + 4; // 4–12
         const clipKey = "GO_" + spaces;
         const msg =
           color +
@@ -842,7 +842,7 @@ playClipSequence(sequence, msg);
           break;
 
         case "MOVE_AND_SEND_FRIEND_ARCADE": {
-          const spaces = Math.floor(Math.random() * 12) + 1;
+          const spaces = Math.floor(Math.random() * 9) + 4; // 4–12
           msg =
             color +
             "... Move " +
@@ -857,7 +857,7 @@ playClipSequence(sequence, msg);
         }
 
         case "MOVE_AND_SEND_FRIEND_ICECREAM": {
-          const spaces2 = Math.floor(Math.random() * 12) + 1;
+          const spaces2 = Math.floor(Math.random() * 9) + 4; // 4–12
           msg =
             color +
             "... Move " +
@@ -871,7 +871,7 @@ playClipSequence(sequence, msg);
         }
 
         case "MOVE_AND_SEND_FRIEND_ANYWHERE": {
-          const spaces3 = Math.floor(Math.random() * 12) + 1;
+          const spaces3 = Math.floor(Math.random() * 9) + 4; // 4–12
           msg =
             color +
             "... Move " +
@@ -1160,3 +1160,5 @@ playClipSequence(sequence, msg);
   </script>
 </body>
 </html>
+
+
