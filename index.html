@@ -433,6 +433,12 @@
       GAME_ON: "001_game_on_hi_colors.mp3",
       TRY_AGAIN_LATER: "003_try_again_later.mp3",
       
+      // color greetings
+      HI_RED: "hi_red.mp3",
+      HI_BLUE: "hi_blue.mp3",
+      HI_GREEN: "hi_green.mp3",
+      HI_YELLOW: "hi_yellow.mp3",
+      
       // phrase / word clips
       ATTENTION_SHOPPERS: "002_attention_mall_shoppers.mp3",
       MEET_ALL_BANK: "008_meet_all_at_bank.mp3",
@@ -645,28 +651,50 @@ async function playClipSequence(keys, screenText) {
     /***********************
      * COLOR SELECTION (who is playing)
      ***********************/
-    document.querySelectorAll(".color-chip").forEach(chip => {
-      chip.addEventListener("click", () => {
-        const color = chip.dataset.color;
-        if (state !== STATE.IDLE && gameStarted) {
-          // do not allow changing colors mid-game
-          return;
-        }
-        const idx = activePlayers.indexOf(color);
-        if (idx === -1) {
-          activePlayers.push(color);
-          chip.classList.add("active");
-        } else {
-          activePlayers.splice(idx, 1);
-          chip.classList.remove("active");
-        }
-        setStatus(
-          activePlayers.length
-            ? "Shoppers: " + activePlayers.join(", ")
-            : "No shoppers selected yet."
-        );
-      });
-    });
+document.querySelectorAll(".color-chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    const color = chip.dataset.color;
+
+    // Don't allow changing players once the game has started
+    if (state !== STATE.IDLE && gameStarted) {
+      return;
+    }
+
+    const idx = activePlayers.indexOf(color);
+    if (idx === -1) {
+      // Selecting this color
+      activePlayers.push(color);
+      chip.classList.add("active");
+
+      // Play a “Hi <color>” greeting if we have a clip for it
+      const greetingKey =
+        color === "Red"
+          ? "HI_RED"
+          : color === "Blue"
+          ? "HI_BLUE"
+          : color === "Green"
+          ? "HI_GREEN"
+          : color === "Yellow"
+          ? "HI_YELLOW"
+          : null;
+
+      if (greetingKey) {
+        playClip(greetingKey, "Hi " + color + " shopper!");
+      }
+    } else {
+      // Deselect this color
+      activePlayers.splice(idx, 1);
+      chip.classList.remove("active");
+    }
+
+    setStatus(
+      activePlayers.length
+        ? "Shoppers: " + activePlayers.join(", ")
+        : "No shoppers selected yet."
+    );
+  });
+});
+
 
     /***********************
      * GAME FLOW
@@ -690,11 +718,16 @@ async function playClipSequence(keys, screenText) {
       const greetText = greetingOrder.length
         ? "Hi " + greetingOrder.join("! Hi ") + "!"
         : "Hi Shoppers!";
-      updateScreen(greetText + " Place your shoppers in the parking lots. Then wait for your turn.");
-      playClip("GAME_ON", greetText);
+      
+        const fullGreeting =
+        greetText +
+        " Place your shoppers in the parking lots. Then wait for your turn.";
+        
+        // Play GAME_ON first, then do the sales/clearance announcement
+        playClipSequence(["GAME_ON"], fullGreeting).then(() => {
+        announceSalesAndClearance();
+        });
 
-      // First sales/clearance announcement (you can map these to real store clips)
-      announceSalesAndClearance();
 
       const first = getCurrentPlayerColor();
       if (first) {
@@ -760,33 +793,34 @@ const sequence = [
 playClipSequence(sequence, msg);
     }
 
-    function issueMovementForCurrentPlayer() {
-      const color = getCurrentPlayerColor();
-      if (!color) return;
+function issueMovementForCurrentPlayer() {
+  const color = getCurrentPlayerColor();
+  if (!color) return;
 
-      // Decide between numeric movement vs. special location
-      const r = Math.random();
-      if (r < 0.55) {
-        // Move N spaces (using GO_4..GO_12)
-        const spaces = Math.floor(Math.random() * 9) + 4; // 4–12
-        const clipKey = "GO_" + spaces;
-        const msg =
-          color +
-          "... move " +
-          spaces +
-          " space" +
-          (spaces === 1 ? "" : "s") +
-          ". Remember: move along spaces, no diagonals, and enter stores through doors only.";
-        playClip(clipKey, msg);
-        setStatus(
-          "Try to move into a store to buy, or into the bank for cash. You don't have to use the full count when entering a store or bank."
-        );
-      } else {
-        // Special movement events from the directions
-        triggerSpecialEvent(color);
-      }
-      awaitingMovement = false; // now we're in the “take actions” phase
-    }
+  // Decide between numeric movement vs. special location
+  const r = Math.random();
+  if (r < 0.8) {
+    // About 80% of the time: normal movement
+    const spaces = Math.floor(Math.random() * 9) + 4; // 4–12
+    const clipKey = "GO_" + spaces;
+    const msg =
+      color +
+      "... move " +
+      spaces +
+      " space" +
+      (spaces === 1 ? "" : "s") +
+      ". Remember: move along spaces, no diagonals, and enter stores through doors only.";
+    playClip(clipKey, msg);
+    setStatus(
+      "Try to move into a store to buy, or into the bank for cash. You don't have to use the full count when entering a store or bank."
+    );
+  } else {
+    // About 20% of the time: special movement events from the directions
+    triggerSpecialEvent(color);
+  }
+  awaitingMovement = false; // now we're in the “take actions” phase
+}
+
 
     function triggerSpecialEvent(color) {
       const events = [
