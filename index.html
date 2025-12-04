@@ -467,12 +467,26 @@
   BANK_100: "audio/0403_take_100_from_bank.mp3",
   BANK_CLOSED: "audio/0404_bank_closed.mp3",
 
-  // extra movement clips you had that are NOT in Audio Files.csv
-  // (kept so your 1–12 movement logic still works)
-  GO_1: "audio/010-go-1.mp3",
-  GO_2: "audio/011-go-2.mp3",
-  GO_3: "audio/012-go-3.mp3",
-
+  // spoken store names
+  STORE_CARD_SHOP: "audio/store_card_shop.mp3",
+  STORE_BOOK_STORE: "audio/store_book_store.mp3",
+  STORE_CAMERA_STORE: "audio/store_camera_store.mp3",
+  STORE_COMPUTER_STORE: "audio/store_computer_store.mp3",
+  STORE_DEPARTMENT_STORE: "audio/store_department_store.mp3",
+  STORE_DRUG_STORE: "audio/store_drug_store.mp3",
+  STORE_ELECTRONICS_STORE: "audio/store_electronics_store.mp3",
+  STORE_FASHION_BOUTIQUE: "audio/store_fashion_boutique.mp3",
+  STORE_JEWELRY_STORE: "audio/store_jewelry_store.mp3",
+  STORE_KITCHEN_STORE: "audio/store_kitchen_store.mp3",
+  STORE_MENS_SHOP: "audio/store_mens_shop.mp3",
+  STORE_PET_SHOP: "audio/store_pet_shop.mp3",
+  STORE_PHONE_STORE: "audio/store_phone_store.mp3",
+  STORE_RECORD_STORE: "audio/store_record_store.mp3",
+  STORE_SHOE_STORE: "audio/store_shoe_store.mp3",
+  STORE_SPORTS_SHOP: "audio/store_sports_shop.mp3",
+  STORE_SUNGLASSES_BOUTIQUE: "audio/store_sunglasses_boutique.mp3",
+  STORE_TOY_STORE: "audio/store_toy_store.mp3",
+    
   // the two themed clips you already had
   SALE_SHORT_CIRCUIT: "audio/050-sale-short-circuit.mp3",
   CLEARANCE_YUPPY_PUPPIES: "audio/051-clearance-yuppy-puppies.mp3"
@@ -678,13 +692,134 @@
     function announceSalesAndClearance() {
       // Placeholder store names; you can wire real store-specific audio clips here.
       const stores = [
-        "Short Circuit",
-        "Yuppy Puppies",
-        "Lollies",
-        "Teen Tunes",
-        "Sunglasses Hut",
-        "Adventure Outfitters"
-      ];
+  {
+    id: "CARD_SHOP",
+    name: "Card Shop",
+    nameClip: "STORE_CARD_SHOP",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "BOOK_STORE",
+    name: "Book Store",
+    nameClip: "STORE_BOOK_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "CAMERA_STORE",
+    name: "Camera Store",
+    nameClip: "STORE_CAMERA_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "COMPUTER_STORE",
+    name: "Computer Store",
+    nameClip: "STORE_COMPUTER_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "DEPARTMENT_STORE",
+    name: "Department Store",
+    nameClip: "STORE_DEPARTMENT_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "DRUG_STORE",
+    name: "Drug Store",
+    nameClip: "STORE_DRUG_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "ELECTRONICS_STORE",
+    name: "Electronics Store",
+    nameClip: "STORE_ELECTRONICS_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "FASHION_BOUTIQUE",
+    name: "Fashion Boutique",
+    nameClip: "STORE_FASHION_BOUTIQUE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "JEWELRY_STORE",
+    name: "Jewelry Store",
+    nameClip: "STORE_JEWELRY_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "KITCHEN_STORE",
+    name: "Kitchen Store",
+    nameClip: "STORE_KITCHEN_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "MENS_SHOP",
+    name: "Men's Shop",
+    nameClip: "STORE_MENS_SHOP",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "PET_SHOP",
+    name: "Pet Shop",
+    nameClip: "STORE_PET_SHOP",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "PHONE_STORE",
+    name: "Phone Store",
+    nameClip: "STORE_PHONE_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "RECORD_STORE",
+    name: "Record Store",
+    nameClip: "STORE_RECORD_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "SHOE_STORE",
+    name: "Shoe Store",
+    nameClip: "STORE_SHOE_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "SPORTS_SHOP",
+    name: "Sports Shop",
+    nameClip: "STORE_SPORTS_SHOP",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "SUNGLASSES_BOUTIQUE",
+    name: "Sunglasses Boutique",
+    nameClip: "STORE_SUNGLASSES_BOUTIQUE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "TOY_STORE",
+    name: "Toy Store",
+    nameClip: "STORE_TOY_STORE",
+    saleClip: null,
+    clearanceClip: null
+  }
+];
+
       const shuffled = shuffle(stores);
       const clearanceStore = shuffled[0];
       const sale1 = shuffled[1];
@@ -718,7 +853,7 @@
           spaces +
           " space" +
           (spaces === 1 ? "" : "s") +
-          ". Remember: move along spaces, no diagonals, and enter stores through doors only.";
+          ". ";
         playClip(clipKey, msg);
         setStatus(
           "Try to move into a store to buy, or into the bank for cash. You don't have to use the full count when entering a store or bank."
