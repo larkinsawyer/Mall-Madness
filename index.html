@@ -322,38 +322,36 @@
   }
 
   // GAME ON sequence
-  gameBtn.addEventListener('click', ()=>{
-    ledPower.classList.add('on');
-    ledGame.classList.add('on');
-    screenWrite("<strong>GAME ON</strong> - Initializing...");
-    play('startup');
+gameBtn.addEventListener('click', ()=>{
+  const active = Object.keys(state.players).filter(k => state.players[k]);
+  if(active.length === 0){
+    screenWrite("Select at least one player color on the right, then press GAME ON.");
+    return;
+  }
 
-    // After startup, announce attention and sales (timings mimic old device)
-    setTimeout(()=>{
-      play('attention');
-      screenWrite("Attention Mall Shoppers!");
-    }, 1400);
+  state.gameStarted = true;
+  state.playerOrder = active.slice();
+  state.currentTurnIndex = 0;
+  state.awaitingColorSelection = false;
 
-    setTimeout(()=>{
-      play('announce_sales');
-      screenWrite("Sales & Clearances");
-    }, 3000);
+  ledPower.classList.add('on');
+  ledGame.classList.add('on');
+  ledMove.classList.remove('on');
 
-    // Begin registration phase: give players ~6 seconds to register (press MOVE while their color is active)
-    state.awaitingColorSelection = true;
-    screenWrite("Registration: select your card then press MOVE when your color is announced.");
+  screenWrite("<strong>GAME ON</strong> - Initializing...");
+  play('startup');
 
-    // Simulate calling colors in sequence with small spacing; players can press MOVE to register
-    const colors = ['red','blue','green','yellow'];
-    colors.forEach((c, i)=>{
-      setTimeout(()=>{
-        // visually announce color on screen and with beep/turn indicator (we use beep as placeholder)
-        play(`turn_${c}`);
-        screenWrite(`...${capitalize(c)}...`);
-        // allow a window for move-press registration (here we check if someone pressed while this color was active)
-        // Implementation: if player pressed MOVE with card selected, we register them (see MOVE handler).
-      }, 3500 + i*900);
-    });
+  setTimeout(()=>{
+    play('attention');
+    screenWrite("Attention Mall Shoppers!");
+  }, 1400);
+
+  setTimeout(()=>{
+    play('announce_sales');
+    screenWrite("Sales & clearances announced. Use MOVE for each player's turn.");
+  }, 3000);
+});
+
 
     // End registration phase after colors announced
     setTimeout(()=>{
@@ -375,69 +373,49 @@
 
   // MOVE button: registration during initial sequence, or play a turn (move) during play
   moveBtn.addEventListener('click', ()=>{
-    if(state.awaitingColorSelection){
-      // Registration flow: use selected card from dropdown as "I pressed MOVE for this color"
-      const selectedCard = cardSelect.value;
-      if(selectedCard && state.players[selectedCard]){
-        if(!state.playerOrder.includes(selectedCard)){
-          state.playerOrder.push(selectedCard);
-          screenWrite(`Registered player: ${capitalize(selectedCard)}`);
-          log(`Registered via MOVE: ${selectedCard}`);
-          play(`turn_${selectedCard}`);
-        } else {
-          screenWrite(`${capitalize(selectedCard)} already registered.`);
-        }
-      } else {
-        // no selected card -> try to auto-register first active color
-        const firstActive = Object.keys(state.players).find(k=>state.players[k]);
-        if(firstActive && !state.playerOrder.includes(firstActive)){
-          state.playerOrder.push(firstActive);
-          screenWrite(`Auto-registered ${capitalize(firstActive)}`);
-          play(`turn_${firstActive}`);
-        } else {
-          screenWrite(`No player card selected to register.`);
-        }
-      }
-      return;
+  // Must have started a game
+  if(!state.gameStarted){
+    screenWrite("Press GAME ON to start a game first.");
+    return;
+  }
+
+  // Which shopper is taking a turn? Use the selected card color.
+  const currentColor = cardSelect.value;
+  if(!currentColor || !state.players[currentColor]){
+    screenWrite("Choose a player card color on the right, then press MOVE.");
+    return;
+  }
+
+  // Start the turn
+  screenWrite(`${capitalize(currentColor)}... it's your turn.`);
+  play(`turn_${currentColor}`);
+  ledMove.classList.add('on');
+
+  // Choose a movement (4..12) and play the corresponding movement clip
+  const moveKeys = ['move_4','move_5','move_6','move_7','move_8','move_9','move_10','move_11','move_12'];
+  const chosenMoveKey = rnd(moveKeys);
+
+  setTimeout(()=>{
+    play(chosenMoveKey);
+    const numeric = chosenMoveKey.split('_')[1]; // "4","5",...
+    screenWrite(`${capitalize(currentColor)}...Move ${numeric}.`);
+    log(`${capitalize(currentColor)} moves (${numeric}).`);
+
+    // Random special instructions (pizza / restroom / lights)
+    const r = Math.random();
+    if(r < 0.12){
+      play('pizza'); screenWrite(`${capitalize(currentColor)}... meet a friend at the pizza shop.`);
+    } else if(r < 0.22){
+      play('restroom'); screenWrite(`${capitalize(currentColor)}... go to the restroom.`);
+    } else if(r < 0.28){
+      play('lights_parking'); screenWrite(`${capitalize(currentColor)}... left your lights on in the parking lot.`);
     }
 
-    // Normal turn flow - require that players are present
-    if(state.playerOrder.length === 0){
-      screenWrite("No players registered. Press GAME ON and register players.");
-      return;
-    }
+    ledMove.classList.remove('on');
+    // No auto-advance of player here – you change player by changing the card selection.
+  }, 900);
+});
 
-    // Determine whose turn
-    const currentColor = state.playerOrder[state.currentTurnIndex] || state.playerOrder[0];
-    screenWrite(`${capitalize(currentColor)}... it's your turn.`);
-    play(`turn_${currentColor}`);
-    ledMove.classList.add('on');
-
-    // Choose a movement (4..12) and play the corresponding movement clip
-    const moveKeys = ['move_4','move_5','move_6','move_7','move_8','move_9','move_10','move_11','move_12'];
-    const chosenMoveKey = rnd(moveKeys);
-    setTimeout(()=>{
-      play(chosenMoveKey);
-      // Also write text for clarity
-      const numeric = chosenMoveKey.split('_')[1];
-      screenWrite(`${capitalize(currentColor)}...Move ${numeric.replace('move_', '')}.`);
-      log(`${capitalize(currentColor)} moves (${numeric}).`);
-
-      // Randomly offer special instructions (pizza, restroom, lights) - play corresponding phrase sometimes
-      const r = Math.random();
-      if(r < 0.12){
-        play('pizza'); screenWrite(`${capitalize(currentColor)}... meet a friend at the pizza shop.`);
-      } else if(r < 0.22){
-        play('restroom'); screenWrite(`${capitalize(currentColor)}... go to the restroom.`);
-      } else if(r < 0.28){
-        play('lights_parking'); screenWrite(`${capitalize(currentColor)}... left your lights on in the parking lot.`);
-      }
-
-      // Advance turn
-      state.currentTurnIndex = (state.currentTurnIndex + 1) % state.playerOrder.length;
-      ledMove.classList.remove('on');
-    }, 900);
-  });
 
   // REPEAT button: repeat last announcement
   repeatBtn.addEventListener('click', ()=>{
