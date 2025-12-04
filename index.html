@@ -441,9 +441,9 @@
       WORD_AND_AT_THE: "audio/004_and_at_the.mp3",
       WORD_CLEARANCE: "audio/007_clearance_at_the.mp3",
       WORD_SALE: "audio/006_sale_at_the.mp3",
-      BEEP: "audio/005_beep.mp3",
+      BEEP: "audio/005_beep.mp3"
       
-      // movement numbers (1–12)
+      // movement numbers (4–12)
       GO_4: "audio/1003_move_4_spaces.mp3",
       GO_5: "audio/1005_move_5_spaces.mp3",
       GO_6: "audio/1006_move_6_spaces.mp3",
@@ -459,7 +459,7 @@
       SPECIAL_SALE: "audio/0302_hey_you_get_a_special_sale.mp3",
       SPECIAL_CLEARANCE: "audio/0303_hey_you_get_a_special_clearance.mp3",
       LONG_LINE: "audio/0304_long_line_try_again_later.mp3",
-      OUT_OF_STOCK: "audio/0305_sorry_out_of_stock_try_again_later.mov",
+      OUT_OF_STOCK: "audio/0305_sorry_out_of_stock_try_again_later.mp3",
       COSTS_5_MORE: "audio/0306_your_item_costs_5_more.mp3",
       BANK_50: "audio/0401_take_50_from_bank.mp3",
       BANK_75: "audio/0402_take_75_from_bank.mp3",
@@ -652,9 +652,9 @@
 
       // First sales/clearance announcement
       announceSalesAndClearance();
-      playClip("SALE", saleText);
-      playClip("AND_AT", andatTEXT);
-      playClip("CLEARANCE", clearanceText);
+      playClip("WORD_SALE", saleText);
+      playClip("WORD_AND_AT_THE", andatTEXT);
+      playClip("WORD_CLEARANCE", clearanceText);
 
       const first = getCurrentPlayerColor();
       if (first) {
@@ -668,47 +668,180 @@
 
     function announceSalesAndClearance() {
       // Placeholder store names; you can wire real store-specific audio clips here.
-      const stores = [
-        "CARD_SHOP: "audio/_0101_card_shop.mp3",
-        "BOOK_STORE: "audio/_0102_book_store.mp3",
-        "CAMERA_STORE: "audio/_0103_camera_store.mp3",
-        "COMPUTER_STORE: "audio/_0104_computer_store.mp3",
-        "DEPARTMENT_STORE: "audio/_0105_department_store.mp3",
-        "DRUG_STORE: "audio/_0106_drug_store.mp3",
-        "ELECTRONICS_STORE: "audio/_0107_electronics_store.mp3",
-        "FASHION_BOUTIQUE: "audio/_0108_fashion_boutique.mp3",
-        "JEWELRY_STORE: "audio/_0109_jewelry_store.mp3",
-        "KITCHEN_STORE: "audio/_0110_kitchen_store.mp3",
-        "MENS_SHOP: "audio/_0111_mens_shop.mp3",
-        "PET_SHOP: "audio/_0112_pet_shop.mp3",
-        "PHONE_STORE: "audio/_0113_phone_store.mp3",
-        "RECORD_STORE: "audio/_0114_record_store.mp3",
-        "SHOE_STORE: "audio/_0115_shoe_store.mp3",
-        "SPORTS_SHOP: "audio/_0116_sports_shop.mp3",
-        "SUNGLASSES_BOUTIQUE: "audio/_0117_sunglasses_boutique.mp3",
-        "TOY_STORE: "audio/_0118_toy_store.mp3"
-      ];
-      const shuffled = shuffle(STORES);
+      const STORES = [
+  {
+    id: "CARD_SHOP",
+    name: "Card Shop",
+    nameClip: "STORE_CARD_SHOP",     // optional
+    saleClip: "SPECIAL_SALE_CARD_SHOP",
+    clearanceClip: "SPECIAL_CLEARANCE_CARD_SHOP"
+  },
+  {
+    id: "BOOK_STORE",
+    name: "Book Store",
+    nameClip: "STORE_BOOK_STORE",
+    saleClip: "SPECIAL_SALE_BOOK_STORE",
+    clearanceClip: "SPECIAL_CLEARANCE_BOOK_STORE"
+  },
+  {
+    id: "CAMERA_STORE",
+    name: "Camera Store",
+    nameClip: "STORE_CAMERA_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "COMPUTER_STORE",
+    name: "Computer Store",
+    nameClip: "STORE_COMPUTER_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "DEPARTMENT_STORE",
+    name: "Department Store",
+    nameClip: "STORE_DEPARTMENT_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "DRUG_STORE",
+    name: "Drug Store",
+    nameClip: "STORE_DRUG_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "ELECTRONICS_STORE",
+    name: "Electronics Store",
+    nameClip: "STORE_ELECTRONICS_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "FASHION_BOUTIQUE",
+    name: "Fashion Boutique",
+    nameClip: "STORE_FASHION_BOUTIQUE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "JEWELRY_STORE",
+    name: "Jewelry Store",
+    nameClip: "STORE_JEWELRY_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "KITCHEN_STORE",
+    name: "Kitchen Store",
+    nameClip: "STORE_KITCHEN_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "MENS_SHOP",
+    name: "Men's Shop",
+    nameClip: "STORE_MENS_SHOP",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "PET_SHOP",
+    name: "Pet Shop",
+    nameClip: "STORE_PET_SHOP",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "PHONE_STORE",
+    name: "Phone Store",
+    nameClip: "STORE_PHONE_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "RECORD_STORE",
+    name: "Record Store",
+    nameClip: "STORE_RECORD_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "SHOE_STORE",
+    name: "Shoe Store",
+    nameClip: "STORE_SHOE_STORE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "SPORTS_SHOP",
+    name: "Sports Shop",
+    nameClip: "STORE_SPORTS_SHOP",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "SUNGLASSES_BOUTIQUE",
+    name: "Sunglasses Boutique",
+    nameClip: "STORE_SUNGLASSES_BOUTIQUE",
+    saleClip: null,
+    clearanceClip: null
+  },
+  {
+    id: "TOY_STORE",
+    name: "Toy Store",
+    nameClip: "STORE_TOY_STORE",
+    saleClip: null,
+    clearanceClip: null
+  }
+];
+
+  // Text for the screen
+  const shuffled = shuffle(STORES);
   const clearanceStore = shuffled[0];
   const sale1 = shuffled[1];
   const sale2 = shuffled[2];
 
-  // Text for the screen
-  const msg =
+  resetStoreStatuses();
+
+  storeStatus[clearanceStore.id] = "clearance";
+  storeStatus[sale1.id] = "sale";
+  storeStatus[sale2.id] = "sale";
+
+ const msg =
     "Attention mall shoppers! Clearance at " +
-    (clearanceStore ? clearanceStore.name : "a mystery store") +
+    clearanceStore.name +
     ". Sales at " +
-    (sale1 ? sale1.name : "—") +
+    sale1.name +
     " and " +
-    (sale2 ? sale2.name : "—") +
+    sale2.name +
     ". Move the signs.";
 
-  // Build the audio sequence:
-  // “Attention mall shoppers! Clearance [store] Sale [store] and at the [store]”
+  // Build an audio sequence
+  const seq = [];
+
+  seq.push("ATTENTION_SHOPPERS");
+
+  seq.push("WORD_CLEARANCE");
+  if (clearanceStore.nameClip) seq.push(clearanceStore.nameClip);
+  else seq.push("BEEP");
+
+  seq.push("WORD_SALE");
+  if (sale1.nameClip) seq.push(sale1.nameClip);
+  else seq.push("BEEP");
+
+  seq.push("WORD_AND_AT_THE");
+  if (sale2.nameClip) seq.push(sale2.nameClip);
+  else seq.push("BEEP");
+
+  playClipSequence(seq, msg);
+}
+    
   const sequence = [];
 
   // Intro
-  sequence.push("ATTENTION_MALL_SHOPPERS");
+  sequence.push("ATTENTION_SHOPPERS");
 
   // "Clearance" + clearance store name (if clip exists)
   if (clearanceStore) {
@@ -738,6 +871,12 @@
   playClipSequence(sequence, msg);
 
   // Optional: update internal storeStatus if you're tracking signs
+ function resetStoreStatuses() {
+  STORES.forEach(store => {
+    storeStatus[store.id] = null;
+  });
+}
+
   resetStoreStatuses();
   if (clearanceStore) storeStatus[clearanceStore.id] = "clearance";
   if (sale1) storeStatus[sale1.id] = "sale";
@@ -775,7 +914,7 @@ async function playClipSequence(keys, screenText) {
       const r = Math.random();
       if (r < 0.55) {
         // Move N spaces
-        const spaces = Math.floor(Math.random() * 12) + 1; // 1–12
+        const spaces = Math.floor(Math.random() * 12) + 4; // 4–12
         const clipKey = "GO_" + spaces;
         const msg =
           color +
