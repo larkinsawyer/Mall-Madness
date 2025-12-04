@@ -874,7 +874,7 @@ function issueMovementForCurrentPlayer() {
           msg =
             color +
             "... Meet all shoppers at the bank. Everyone move to the bank space. Take turns inserting credit cards and follow the BANK button instructions.";
-          playClip("MEET_ALL_BANK", msg);
+          playClip("MEET_BANK", msg);
           setStatus(
             "Starting with " +
               color +
@@ -891,7 +891,7 @@ function issueMovementForCurrentPlayer() {
           msg =
             color +
             "... You're hungry. Meet a friend at the Pizza Shop. Move your shopper and any one opponent to the Pizza Shop.";
-          playClip("YOU_HUNGRY_PIZZA", msg);
+          playClip("HUNGRY_PIZZA", msg);
           setStatus(
             "You can BUY pizza (choose Pizza) to unlock the bank again later. You don't get a peg for pizza."
           );
@@ -905,7 +905,7 @@ function issueMovementForCurrentPlayer() {
 
         case "LIGHTS_PARKING":
           msg = color + "... You left your lights on. Go to the parking lot.";
-          playClip("LIGHTS_PARKING_LOT", msg);
+          playClip("LIGHTS_PARKING", msg);
           setStatus("Move back to your entrance parking lot, then press MOVE to end your turn.");
           break;
 
