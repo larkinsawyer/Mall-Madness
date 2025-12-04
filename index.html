@@ -427,71 +427,67 @@
   <script>
     /***********************
      * AUDIO CLIP MAPPING
-     * Plug in your real audio file paths here.
+     * (updated from Audio Files.csv)
      ***********************/
     const clips = {
-  GAME_ON: "audio/001_game_on_hi_colors.mp3",
-  TRY_AGAIN_LATER: "audio/003_try_again_later.mp3",
+      GAME_ON: "001_game_on_hi_colors.mp3",
+      TRY_AGAIN_LATER: "003_try_again_later.mp3",
+      
+      // phrase / word clips
+      ATTENTION_SHOPPERS: "002_attention_mall_shoppers.mp3",
+      MEET_ALL_BANK: "008_meet_all_at_bank.mp3",
+      YOU_HUNGRY_PIZZA: "0202_hungry_meet_friend_pizza_shop.mp3",
+      RESTROOM: "0203_go_to_restroom.mp3",
+      LIGHTS_PARKING_LOT: "0204_left_lights_on_parking_lot.mp3",
+      AND_AT_THE: "004_and_at_the.mp3",
+      CLEARANCE: "007_clearance_at_the.mp3",
+      SALE: "006_sale_at_the.mp3",
+      BEEP: "005_beep.mp3",
+      
+      // movement numbers (4–12)
+      GO_4: "1003_move_4_spaces.mp3",
+      GO_5: "1005_move_5_spaces.mp3",
+      GO_6: "1006_move_6_spaces.mp3",
+      GO_7: "1007_move_7_spaces.mp3",
+      GO_8: "1008_move_8_spaces.mp3",
+      GO_9: "1009_move_9_spaces.mp3",
+      GO_10: "1010_move_10_spaces.mp3",
+      GO_11: "1011_move_11_spaces.mp3",
+      GO_12: "1012_move_12_spaces.mp3",
+      
+      // sale/clearance/bank
+      CHING_CHING: "0301_ching_ching_cash_register.mp3",
+      SPECIAL_SALE: "0302_hey_you_get_a_special_sale.mp3",
+      SPECIAL_CLEARANCE: "0303_hey_you_get_a_special_clearance.mp3",
+      LONG_LINE: "0304_long_line_try_again_later.mp3",
+      OUT_OF_STOCK: "0305_sorry_out_of_stock_try_again_later.mp3",
+      COSTS_5_MORE: "0306_your_item_costs_5_more.mp3",
+      BANK_50: "0401_take_50_from_bank.mp3",
+      BANK_75: "0402_take_75_from_bank.mp3",
+      BANK_100: "0403_take_100_from_bank.mp3",
+      BANK_CLOSED: "0404_bank_closed.mp3",
 
-  // phrase / word clips from Audio Files
-  ATTENTION_SHOPPERS: "audio/002_attention_mall_shoppers.mp3",
-  MEET_ALL_BANK: "audio/008_meet_all_at_bank.mp3",
-  YOU_HUNGRY_PIZZA: "audio/0202_hungry_meet_friend_pizza_shop.mp3",
-  RESTROOM: "audio/0203_go_to_restroom.mp3",
-  LIGHTS_PARKING_LOT: "audio/0204_left_lights_on_parking_lot.mp3",
-  WORD_AND_AT_THE: "audio/004_and_at_the.mp3",
-  WORD_CLEARANCE: "audio/007_clearance_at_the.mp3",
-  WORD_SALE: "audio/006_sale_at_the.mp3",
-  BEEP: "audio/005_beep.mp3",
 
-  // movement numbers from Audio Files (4–12)
-  GO_4: "audio/1003_move_4_spaces.mp3",
-  GO_5: "audio/1005_move_5_spaces.mp3",
-  GO_6: "audio/1006_move_6_spaces.mp3",
-  GO_7: "audio/1007_move_7_spaces.mp3",
-  GO_8: "audio/1008_move_8_spaces.mp3",
-  GO_9: "audio/1009_move_9_spaces.mp3",
-  GO_10: "audio/1010_move_10_spaces.mp3",
-  GO_11: "audio/1011_move_11_spaces.mp3",
-  GO_12: "audio/1012_move_12_spaces.mp3",
-
-  // sale / clearance / bank from Audio Files
-  CHING_CHING: "audio/0301_ching_ching_cash_register.mp3",
-  SPECIAL_SALE: "audio/0302_hey_you_get_a_special_sale.mp3",
-  SPECIAL_CLEARANCE: "audio/0303_hey_you_get_a_special_clearance.mp3",
-  LONG_LINE: "audio/0304_long_line_try_again_later.mp3",
-  OUT_OF_STOCK: "audio/0305_sorry_out_of_stock_try_again_later.mp3",
-  COSTS_5_MORE: "audio/0306_your_item_costs_5_more.mp3",
-  BANK_50: "audio/0401_take_50_from_bank.mp3",
-  BANK_75: "audio/0402_take_75_from_bank.mp3",
-  BANK_100: "audio/0403_take_100_from_bank.mp3",
-  BANK_CLOSED: "audio/0404_bank_closed.mp3",
-
-  // spoken store names
-  STORE_CARD_SHOP: "audio/store_card_shop.mp3",
-  STORE_BOOK_STORE: "audio/store_book_store.mp3",
-  STORE_CAMERA_STORE: "audio/store_camera_store.mp3",
-  STORE_COMPUTER_STORE: "audio/store_computer_store.mp3",
-  STORE_DEPARTMENT_STORE: "audio/store_department_store.mp3",
-  STORE_DRUG_STORE: "audio/store_drug_store.mp3",
-  STORE_ELECTRONICS_STORE: "audio/store_electronics_store.mp3",
-  STORE_FASHION_BOUTIQUE: "audio/store_fashion_boutique.mp3",
-  STORE_JEWELRY_STORE: "audio/store_jewelry_store.mp3",
-  STORE_KITCHEN_STORE: "audio/store_kitchen_store.mp3",
-  STORE_MENS_SHOP: "audio/store_mens_shop.mp3",
-  STORE_PET_SHOP: "audio/store_pet_shop.mp3",
-  STORE_PHONE_STORE: "audio/store_phone_store.mp3",
-  STORE_RECORD_STORE: "audio/store_record_store.mp3",
-  STORE_SHOE_STORE: "audio/store_shoe_store.mp3",
-  STORE_SPORTS_SHOP: "audio/store_sports_shop.mp3",
-  STORE_SUNGLASSES_BOUTIQUE: "audio/store_sunglasses_boutique.mp3",
-  STORE_TOY_STORE: "audio/store_toy_store.mp3",
-    
-  // the two themed clips you already had
-  SALE_SHORT_CIRCUIT: "audio/050-sale-short-circuit.mp3",
-  CLEARANCE_YUPPY_PUPPIES: "audio/051-clearance-yuppy-puppies.mp3"
-};
-
+      // store name announcements
+      CARD_SHOP: "0101_card_shop.mp3",
+      BOOK_STORE: "0102_book_store.mp3",
+      CAMERA_STORE: "0103_camera_store.mp3",
+      COMPUTER_STORE: "0104_computer_store.mp3",
+      DEPARTMENT_STORE: "0105_department_store.mp3",
+      DRUG_STORE: "0106_drug_store.mp3",
+      ELECTRONICS_STORE: "0107_electronics_store.mp3",
+      FASHION_BOUTIQUE: "0108_fashion_boutique.mp3",
+      JEWELRY_STORE: "0109_jewelry_store.mp3",
+      KITCHEN_STORE: "0110_kitchen_store.mp3",
+      MENS_SHOP: "0111_mens_shop.mp3",
+      PET_SHOP: "0112_pet_shop.mp3",
+      PHONE_STORE: "0113_phone_store.mp3",
+      RECORD_STORE: "0114_record_store.mp3",
+      SHOE_STORE: "0115_shoe_store.mp3",
+      SPORTS_SHOP: "0116_sports_shop.mp3",
+      SUNGLASSES_BOUTIQUE: "0117_sunglasses_boutique.mp3",
+      TOY_STORE: "0118_toy_store.mp3"
+    };
 
     let lastAudio = null;
     let lastClipKey = null;
@@ -519,6 +515,27 @@
         updateScreen(labelText);
       }
     }
+
+async function playClipSequence(keys, screenText) {
+  // Optional: update screen once at the start
+  if (screenText) updateScreen(screenText);
+
+  for (const key of keys) {
+    const src = clips[key];
+    if (!src) continue;
+
+    await new Promise(resolve => {
+      const audio = new Audio(src);
+      lastAudio = audio;
+      lastClipKey = key;
+
+      audio.addEventListener("ended", resolve);
+      audio.addEventListener("error", resolve);
+
+      audio.play().catch(() => resolve());
+    });
+  }
+}
 
     /***********************
      * GAME STATE
@@ -692,149 +709,55 @@
     function announceSalesAndClearance() {
       // Placeholder store names; you can wire real store-specific audio clips here.
       const stores = [
-  {
-    id: "CARD_SHOP",
-    name: "Card Shop",
-    nameClip: "STORE_CARD_SHOP",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "BOOK_STORE",
-    name: "Book Store",
-    nameClip: "STORE_BOOK_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "CAMERA_STORE",
-    name: "Camera Store",
-    nameClip: "STORE_CAMERA_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "COMPUTER_STORE",
-    name: "Computer Store",
-    nameClip: "STORE_COMPUTER_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "DEPARTMENT_STORE",
-    name: "Department Store",
-    nameClip: "STORE_DEPARTMENT_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "DRUG_STORE",
-    name: "Drug Store",
-    nameClip: "STORE_DRUG_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "ELECTRONICS_STORE",
-    name: "Electronics Store",
-    nameClip: "STORE_ELECTRONICS_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "FASHION_BOUTIQUE",
-    name: "Fashion Boutique",
-    nameClip: "STORE_FASHION_BOUTIQUE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "JEWELRY_STORE",
-    name: "Jewelry Store",
-    nameClip: "STORE_JEWELRY_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "KITCHEN_STORE",
-    name: "Kitchen Store",
-    nameClip: "STORE_KITCHEN_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "MENS_SHOP",
-    name: "Men's Shop",
-    nameClip: "STORE_MENS_SHOP",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "PET_SHOP",
-    name: "Pet Shop",
-    nameClip: "STORE_PET_SHOP",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "PHONE_STORE",
-    name: "Phone Store",
-    nameClip: "STORE_PHONE_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "RECORD_STORE",
-    name: "Record Store",
-    nameClip: "STORE_RECORD_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "SHOE_STORE",
-    name: "Shoe Store",
-    nameClip: "STORE_SHOE_STORE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "SPORTS_SHOP",
-    name: "Sports Shop",
-    nameClip: "STORE_SPORTS_SHOP",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "SUNGLASSES_BOUTIQUE",
-    name: "Sunglasses Boutique",
-    nameClip: "STORE_SUNGLASSES_BOUTIQUE",
-    saleClip: null,
-    clearanceClip: null
-  },
-  {
-    id: "TOY_STORE",
-    name: "Toy Store",
-    nameClip: "STORE_TOY_STORE",
-    saleClip: null,
-    clearanceClip: null
-  }
-];
-
+        "Short Circuit",
+        "Book Store",
+        "Camera Store",
+        "Card Shop",
+        "Computer Store",
+        "Department Store",
+        "Drug Store",
+        "Electronics",
+        "Fashion Boutique",
+        "Jewelry Store",
+        "Kitchen Store",
+        "Men's Shop",
+        "Pet Shop",
+        "Phone Store",
+        "Record Store",
+        "Shoe Store",
+        "Sports Shop",
+        "Sunglasses Boutique",
+        "Toy Store"
+      ];
       const shuffled = shuffle(stores);
       const clearanceStore = shuffled[0];
       const sale1 = shuffled[1];
       const sale2 = shuffled[2];
 
       const msg =
-        "Attention mall shoppers! Clearance at " +
-        clearanceStore +
-        ". Sales at " +
-        sale1 +
-        " and " +
-        sale2 +
-        ". Move the signs.";
-      updateScreen(msg);
-      playClip("ATTENTION_SHOPPERS", msg);
+  "Attention mall shoppers! Clearance at " +
+  clearanceStore +
+  ". Sales at " +
+  sale1 +
+  " and " +
+  sale2 +
+  ". Move the signs.";
+
+updateScreen(msg);
+
+// Play the full phrase as separate audio clips:
+// 1) "Attention mall shoppers!"
+// 2) "Clearance at the"
+// 3) "Sale at the"
+// 4) "and at the"
+const sequence = [
+  "ATTENTION_SHOPPERS", // "Attention mall shoppers!"
+  "CLEARANCE",     // "Clearance at the"
+  "SALE",          // "Sale at the"
+  "AND_AT_THE"     // "and at the"
+];
+
+playClipSequence(sequence, msg);
     }
 
     function issueMovementForCurrentPlayer() {
@@ -844,8 +767,8 @@
       // Decide between numeric movement vs. special location
       const r = Math.random();
       if (r < 0.55) {
-        // Move N spaces
-        const spaces = Math.floor(Math.random() * 12) + 1; // 1–12
+        // Move N spaces (still using GO_1..GO_12; you now have real audio for GO_4–GO_12)
+        const spaces = Math.floor(Math.random() * 12) + 1; // 4–12
         const clipKey = "GO_" + spaces;
         const msg =
           color +
@@ -853,7 +776,7 @@
           spaces +
           " space" +
           (spaces === 1 ? "" : "s") +
-          ". ";
+          ". Remember: move along spaces, no diagonals, and enter stores through doors only.";
         playClip(clipKey, msg);
         setStatus(
           "Try to move into a store to buy, or into the bank for cash. You don't have to use the full count when entering a store or bank."
