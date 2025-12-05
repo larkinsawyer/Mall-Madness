@@ -910,49 +910,48 @@ function issueMovementForCurrentPlayer() {
           break;
 
         case "MOVE_AND_SEND_FRIEND_ARCADE": {
-          const spaces = Math.floor(Math.random() * 9) + 4; // 4–12
-          msg =
-            color +
-            "... Move " +
-            spaces +
-            " spaces and send a friend to the Arcade.";
-          updateScreen(msg);
-          // You can optionally map a specific clip here
-          setStatus(
-            "After moving, choose an opponent and move their shopper to the Arcade. They cannot buy or bank on your turn."
-          );
-          break;
-        }
+  const spaces = Math.floor(Math.random() * 9) + 4; // 4–12
+  msg =
+    color +
+    "... Move " +
+    spaces +
+    " spaces and send a friend to the Arcade.";
+  updateScreen(msg);
+  // You can optionally map a specific clip here
+  setStatus(
+    "After moving, choose an opponent and move their shopper to the Arcade. They cannot buy or bank on your turn."
+  );
+  break;
+}
 
-        case "MOVE_AND_SEND_FRIEND_ICECREAM": {
-          const spaces2 = Math.floor(Math.random() * 9) + 4; // 4–12
-          msg =
-            color +
-            "... Move " +
-            spaces2 +
-            " spaces and send a friend for Ice Cream.";
-          updateScreen(msg);
-          setStatus(
-            "After moving, choose an opponent and move their shopper to the Ice Cream shop. They cannot buy or bank on your turn."
-          );
-          break;
-        }
+case "MOVE_AND_SEND_FRIEND_ICECREAM": {
+  const spaces2 = Math.floor(Math.random() * 9) + 4; // 4–12
+  msg =
+    color +
+    "... Move " +
+    spaces2 +
+    " spaces and send a friend for Ice Cream.";
+  updateScreen(msg);
+  setStatus(
+    "After moving, choose an opponent and move their sho...er to the Ice Cream shop. They cannot buy or bank on your turn."
+  );
+  break;
+}
 
-        case "MOVE_AND_SEND_FRIEND_ANYWHERE": {
-          const spaces3 = Math.floor(Math.random() * 9) + 4; // 4–12
-          msg =
-            color +
-            "... Move " +
-            spaces3 +
-            " spaces and send a friend anywhere.";
-          updateScreen(msg);
-          setStatus(
-            "After moving, choose an opponent and move their shopper to any space (store or bank). They still cannot buy or bank on your turn."
-          );
-          break;
-        }
-      }
-    }
+case "MOVE_AND_SEND_FRIEND_ANYWHERE": {
+  const spaces3 = Math.floor(Math.random() * 9) + 4; // 4–12
+  msg =
+    color +
+    "... Move " +
+    spaces3 +
+    " spaces and send a friend anywhere.";
+  updateScreen(msg);
+  setStatus(
+    "After moving, choose an opponent and move their sho...ce (store or bank). They still cannot buy or bank on your turn."
+  );
+  break;
+}
+
 
     function endTurnAndAdvance() {
       const color = getCurrentPlayerColor();
