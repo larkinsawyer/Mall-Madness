@@ -219,7 +219,8 @@
     .button-grid {
       margin-top: 10px;
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(3, auto);
       gap: 10px;
       position: relative;
       z-index: 1;
@@ -252,7 +253,6 @@
     }
 
     .btn-game-on {
-      grid-column: span 3;
       background: radial-gradient(circle at top, #ffd1f0, var(--hot-pink));
     }
 
@@ -275,11 +275,18 @@
     }
 
     .btn-long-game {
-      grid-column: span 3;
       background: radial-gradient(circle at top, #f2f2f2, #9e9e9e);
       color: #1a1a1a;
       font-size: 0.65rem;
     }
+
+    /* Button layout positions */
+    .btn-game-on { grid-column: 1; grid-row: 1; }
+    .btn-move { grid-column: 2; grid-row: 1; }
+    .btn-buy { grid-column: 1; grid-row: 2; }
+    .btn-bank { grid-column: 2; grid-row: 2; }
+    .btn-repeat { grid-column: 1; grid-row: 3; }
+    .btn-long-game { grid-column: 2; grid-row: 3; }
 
     .foot-panel {
       margin-top: 12px;
@@ -356,11 +363,7 @@
       .button-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
-      .btn-game-on,
-      .btn-long-game {
-        grid-column: span 2;
-      }
-    }
+          }
   </style>
 </head>
 <body>
@@ -555,6 +558,8 @@ async function playClipSequence(keys, screenText) {
     let lastMessage = "Select which shopper colors are playing, then press GAME ON.";
     let targetItems = 6; // 6 or 10
     let gameStarted = false;
+    let turnsTakenSinceStoreChange = {}; // e.g. { Red: 0, Blue: 0 }
+    let pendingSignChange = false; // when true, next player's turn starts with sign update
 
     const STATE = {
       IDLE: "IDLE",
@@ -646,6 +651,10 @@ async function playClipSequence(keys, screenText) {
           hasJustBought: false // for internal bookkeeping if you want to extend
         };
       });
+      turnsTakenSinceStoreChange = {};
+      activePlayers.forEach(color => {
+        turnsTakenSinceStoreChange[color] = 0;
+      });
       rebuildPlayerPanel();
     }
 
@@ -707,6 +716,8 @@ document.querySelectorAll(".color-chip").forEach(chip => {
       }
       state = STATE.RUNNING;
       gameStarted = true;
+      pendingSignChange = false;
+      resetStorePool();
       setPowerLed(true);
       initPlayers();
       currentPlayerIndex = 0;
@@ -760,70 +771,72 @@ const STORE_AUDIO_MAP = {
   "Sunglasses Boutique": "SUNGLASSES_BOUTIQUE",
   "Toy Store": "TOY_STORE"
 };
+
+
+// Store rotation (no repeats until pool is low, then recycle)
+const ALL_STORES = [
+  "Book Store",
+  "Camera Store",
+  "Card Shop",
+  "Computer Store",
+  "Department Store",
+  "Drug Store",
+  "Electronics",
+  "Fashion Boutique",
+  "Jewelry Store",
+  "Kitchen Store",
+  "Men's Shop",
+  "Pet Shop",
+  "Phone Store",
+  "Record Store",
+  "Shoe Store",
+  "Sports Shop",
+  "Sunglasses Boutique",
+  "Toy Store"
+];
+
+let storePool = []; // unused stores for this cycle
+
+function resetStorePool() {
+  storePool = shuffle(ALL_STORES);
+}
+
+function draw3UniqueStores() {
+  // If fewer than 3 unused stores left, restart the list to cycle through all again
+  if (storePool.length < 3) resetStorePool();
+
+  const clearanceStore = storePool.pop();
+  const sale1 = storePool.pop();
+  const sale2 = storePool.pop();
+
+  return { clearanceStore, sale1, sale2 };
+}
     
     function announceSalesAndClearance() {
-      // Placeholder store names; you can wire real store-specific audio clips here.
-      const stores = [
-        "Book Store",
-        "Camera Store",
-        "Card Shop",
-        "Computer Store",
-        "Department Store",
-        "Drug Store",
-        "Electronics",
-        "Fashion Boutique",
-        "Jewelry Store",
-        "Kitchen Store",
-        "Men's Shop",
-        "Pet Shop",
-        "Phone Store",
-        "Record Store",
-        "Shoe Store",
-        "Sports Shop",
-        "Sunglasses Boutique",
-        "Toy Store"
-      ];
-      const shuffled = shuffle(stores);
-      const clearanceStore = shuffled[0];
-      const sale1 = shuffled[1];
-      const sale2 = shuffled[2];
+      const { clearanceStore, sale1, sale2 } = draw3UniqueStores();
 
       const msg =
-  "Attention mall shoppers! Clearance at " +
-  clearanceStore +
-  ". Sales at " +
-  sale1 +
-  " and " +
-  sale2 +
-  ". Move the signs.";
+        "Attention mall shoppers! Clearance at " +
+        clearanceStore +
+        ". Sales at " +
+        sale1 +
+        " and " +
+        sale2 +
+        ". Move the signs.";
 
-updateScreen(msg);
+      updateScreen(msg);
 
-// Play the full phrase as separate audio clips:
-// 1) "Attention mall shoppers!"
-// 2) "Clearance at the"
-// 3) "Sale at the"
-// 4) "and at the"
-const sequence = [
-  "ATTENTION_SHOPPERS", // "Attention mall shoppers!"
-  "CLEARANCE",     // "Clearance at the"
-  "SALE",          // "Sale at the"
-  "AND_AT_THE"     // "and at the"
-];
+      const audioSequence = [
+        "ATTENTION_SHOPPERS",
+        "CLEARANCE",
+        STORE_AUDIO_MAP[clearanceStore],
+        "SALE",
+        STORE_AUDIO_MAP[sale1],
+        "AND_AT_THE",
+        STORE_AUDIO_MAP[sale2]
+      ];
 
-      // Build final audio sequence: phrase words + each store name clip
-const audioSequence = [
-  "ATTENTION_SHOPPERS",
-  "CLEARANCE",
-  STORE_AUDIO_MAP[clearanceStore],
-  "SALE",
-  STORE_AUDIO_MAP[sale1],
-  "AND_AT_THE",
-  STORE_AUDIO_MAP[sale2]
-];
-
-playClipSequence(audioSequence, msg);
-
+      return playClipSequence(audioSequence, msg);
     }
 
 function issueMovementForCurrentPlayer() {
@@ -956,6 +969,19 @@ function issueMovementForCurrentPlayer() {
     function endTurnAndAdvance() {
       const color = getCurrentPlayerColor();
       if (!color) return;
+
+      // Count this completed turn for the current player
+      if (turnsTakenSinceStoreChange[color] == null) turnsTakenSinceStoreChange[color] = 0;
+      turnsTakenSinceStoreChange[color] += 1;
+
+      // If everyone has taken 2 turns, queue a sign change for the START of the next player's turn
+      const everyoneHasTwoTurns = activePlayers.every(
+        c => (turnsTakenSinceStoreChange[c] || 0) >= 2
+      );
+      if (everyoneHasTwoTurns) {
+        activePlayers.forEach(c => (turnsTakenSinceStoreChange[c] = 0));
+        pendingSignChange = true;
+      }
 
       // Check win condition: 6 (or 10) items and at parking lot (physically)
       const p = players[color];
@@ -1165,6 +1191,8 @@ function issueMovementForCurrentPlayer() {
     });
 
     document.getElementById("btn-move").addEventListener("click", () => {
+      // 🔊 Button press beep
+      playClip("BEEP");
       if (state !== STATE.RUNNING) {
         updateScreen("Press GAME ON to start a new game.");
         return;
@@ -1178,6 +1206,20 @@ function issueMovementForCurrentPlayer() {
 
       if (awaitingMovement) {
         // Start of turn
+
+        // If a sign change is queued, do it NOW (start of this player's turn),
+        // then after the announcement finishes, issue movement.
+        if (pendingSignChange) {
+          pendingSignChange = false;
+
+          announceSalesAndClearance().then(() => {
+            updateScreen(color + ", it's your turn. Listen carefully!");
+            issueMovementForCurrentPlayer();
+          });
+
+          return;
+        }
+
         updateScreen(color + ", it's your turn. Listen carefully!");
         issueMovementForCurrentPlayer();
       } else {
