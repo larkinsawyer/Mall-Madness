@@ -313,7 +313,24 @@
       font-size: 0.7rem;
       padding: 3px 0;
     }
-    .player-label {
+    
+    .player-row.active-player {
+      background: rgba(89, 255, 181, 0.10);
+      border-radius: 12px;
+      padding: 6px 8px;
+      margin: 2px -8px;
+    }
+
+    .player-row.active-player .player-meta {
+      color: #e5fff4;
+    }
+
+    .player-row.active-player .dot {
+      box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.8),
+        0 0 8px rgba(89, 255, 181, 0.6);
+    }
+.player-label {
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -616,11 +633,16 @@ async function playClipSequence(keys, screenText) {
       const rows = Array.from(playersPanel.querySelectorAll(".player-row"));
       rows.forEach(r => r.remove());
 
+      const indicatorColor = bankMeetingMode
+        ? bankMeetingQueue[bankMeetingIndex]
+        : getCurrentPlayerColor();
+
       activePlayers.forEach(color => {
         const p = players[color];
 
         const row = document.createElement("div");
         row.className = "player-row";
+        if (indicatorColor && color === indicatorColor) row.classList.add("active-player");
 
         const label = document.createElement("div");
         label.className = "player-label";
@@ -1149,27 +1171,20 @@ function issueMovementForCurrentPlayer() {
       }
     }
 
+    
     function handleBank() {
       if (state !== STATE.RUNNING) {
         updateScreen("Press GAME ON to start a game first.");
         return;
       }
-      const color = getCurrentPlayerColor();
-      if (!color) return;
-      const p = players[color];
 
-      // Special mode: "Meet everyone at the bank" round
+      // BANK MEETING MODE: ignore turn order, service queue directly
       if (bankMeetingMode) {
-        const expected = bankMeetingQueue[bankMeetingIndex];
+        const meetingColor = bankMeetingQueue[bankMeetingIndex];
+        if (!meetingColor) return;
 
-        // Enforce the order: current player first, then next, etc.
-        if (color !== expected) {
-          updateScreen("Bank meeting in progress. It's " + expected + "'s turn to withdraw.");
-          setStatus("Pass the device to " + expected + " and press BANK.");
-          return;
-        }
+        const p = players[meetingColor];
 
-        // Proceed with a withdrawal (ignore p.canBank entirely)
         const roll = Math.random();
         let amount = 50;
         let clipKey = "BANK_50";
@@ -1186,17 +1201,17 @@ function issueMovementForCurrentPlayer() {
         }
 
         const msg =
-          color +
+          meetingColor +
           "... Take $" +
           amount +
           " from the bank. The banker should count out the money to you.";
         playClip(clipKey, msg);
 
-        // Advance to next player in the bank meeting
         bankMeetingIndex += 1;
 
+        rebuildPlayerPanel();
+
         if (bankMeetingIndex >= bankMeetingQueue.length) {
-          // Meeting finished: bank becomes CLOSED for everyone until they buy something
           bankMeetingMode = false;
           bankMeetingQueue = [];
           bankMeetingIndex = 0;
@@ -1213,12 +1228,15 @@ function issueMovementForCurrentPlayer() {
           const nextBanker = bankMeetingQueue[bankMeetingIndex];
           setStatus("Next: " + nextBanker + " presses BANK to withdraw once.");
         }
-
         return;
       }
 
+      // NORMAL BANKING
+      const color = getCurrentPlayerColor();
+      if (!color) return;
+      const p = players[color];
+
       if (!p.canBank) {
-        // “Bank closed” rule: you must buy something (or pizza) before next withdrawal.
         const msg =
           color +
           "... Bank closed. You must buy something before you can withdraw cash again.";
@@ -1229,7 +1247,6 @@ function issueMovementForCurrentPlayer() {
         return;
       }
 
-      // If allowed, choose how much the bank gives
       const roll = Math.random();
       let amount = 50;
       let clipKey = "BANK_50";
@@ -1255,11 +1272,11 @@ function issueMovementForCurrentPlayer() {
         "After withdrawing, you must buy something before the bank will serve you again."
       );
 
-      // After a successful withdrawal, lock banking until they buy again
       p.canBank = false;
       p.hasJustBought = false;
       rebuildPlayerPanel();
     }
+    
 
     /***********************
      * BUTTON HANDLERS
