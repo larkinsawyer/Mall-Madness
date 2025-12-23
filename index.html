@@ -16,7 +16,7 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
 
   <style>
-:root {
+    :root {
       --purple-body: #602a7a;
       --purple-dark: #3b174b;
       --turquoise: #31c3c8;
@@ -217,28 +217,21 @@
     }
 
     .button-grid {
-  margin-top: 10px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  position: relative;
-  z-index: 1;
-}
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(3, auto);
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
 
-
-    
-.button-grid button {
-  width: 100%;
-  height: 86px;
-  padding: 0 14px;
-  font-size: 1.0rem;
-}
-
-
-button {
+    button {
       border-radius: 999px;
       border: none;
       padding: 10px 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.14em;
       cursor: pointer;
@@ -260,9 +253,8 @@ button {
     }
 
     .btn-game-on {
-  background: radial-gradient(circle at top, #ffd1f0, var(--hot-pink));
-}
-
+      background: radial-gradient(circle at top, #ffd1f0, var(--hot-pink));
+    }
 
     .btn-move {
       background: radial-gradient(circle at top, #c7fff9, var(--turquoise));
@@ -283,15 +275,20 @@ button {
     }
 
     .btn-long-game {
-  background: radial-gradient(circle at top, #f2f2f2, #9e9e9e);
-  color: #1a1a1a;
-  font-size: 0.80rem;
-  line-height: 1.05;
-  padding: 0 14px;
-  white-space: normal;
-}
+      background: radial-gradient(circle at top, #f2f2f2, #9e9e9e);
+      color: #1a1a1a;
+      font-size: 0.65rem;
+    }
 
-.foot-panel {
+    /* Button layout positions */
+    .btn-game-on { grid-column: 1; grid-row: 1; }
+    .btn-move { grid-column: 2; grid-row: 1; }
+    .btn-buy { grid-column: 1; grid-row: 2; }
+    .btn-bank { grid-column: 2; grid-row: 2; }
+    .btn-repeat { grid-column: 1; grid-row: 3; }
+    .btn-long-game { grid-column: 2; grid-row: 3; }
+
+    .foot-panel {
       margin-top: 12px;
       padding-top: 8px;
       border-top: 1px solid rgba(0, 0, 0, 0.5);
@@ -363,26 +360,11 @@ button {
     }
 
     @media (max-width: 380px) {
-  .button-grid {
-  margin-top: 10px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  position: relative;
-  z-index: 1;
-}
-
-
-.button-grid button {
-  width: 100%;
-  height: 86px;
-  padding: 0 14px;
-  font-size: 1.0rem;
-}
-
-
-}
-</style>
+      .button-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+          }
+  </style>
 </head>
 <body>
   <div class="console">
@@ -415,12 +397,13 @@ button {
     <!-- Buttons -->
     <div class="button-grid">
       <button class="btn-game-on" id="btn-game-on">Game On</button>
+
       <button class="btn-move" id="btn-move">Move</button>
+      <button class="btn-repeat" id="btn-repeat">Repeat</button>
 
       <button class="btn-buy" id="btn-buy">Buy</button>
       <button class="btn-bank" id="btn-bank">Bank</button>
 
-      <button class="btn-repeat" id="btn-repeat">Repeat</button>
       <button class="btn-long-game" id="btn-long-game" type="button">
         Toggle: 6&thinsp;/&thinsp;10 Item Game
       </button>
@@ -444,152 +427,145 @@ button {
     </div>
   </div>
 
-    <script>
+  <script>
     /***********************
      * AUDIO CLIP MAPPING
+     * (updated from Audio Files.csv)
      ***********************/
-        const clips = {
-      AND_AT_THE: "and_at_the.mp3",
+    const clips = {
+      TRY_AGAIN_LATER: "try_again_later.mp3",
+      
+      // color greetings
+      HI_RED: "hi_red.mp3",
+      HI_BLUE: "hi_blue.mp3",
+      HI_GREEN: "hi_green.mp3",
+      HI_YELLOW: "hi_yellow.mp3",
+      
+      // phrase / word clips
       ATTENTION_SHOPPERS: "attention_mall_shoppers.mp3",
-      BANK_100: "take_100_from_bank.mp3",
-      BANK_50: "take_50_from_bank.mp3",
-      BANK_75: "take_75_from_bank.mp3",
-      BANK_CLOSED: "bank_closed.mp3",
-      BEEP: "beep.mp3",
-      BOOK_STORE: "book_store.mp3",
-      CAMERA_STORE: "camera_store.mp3",
-      CARD_SHOP: "card_shop.mp3",
-      CHING_CHING: "ching_ching_cash_register.mp3",
+      MEET_BANK: "meet_all_at_bank.mp3",
+      HUNGRY_PIZZA: "hungry_meet_friend_pizza_shop.mp3",
+      RESTROOM: "go_to_restroom.mp3",
+      LIGHTS_PARKING: "left_lights_on_parking_lot.mp3",
+      AND_AT_THE: "and_at_the.mp3",
       CLEARANCE: "clearance_at_the.mp3",
-      COMPUTER_STORE: "computer_store.mp3",
-      COSTS_5_MORE: "your_item_costs_5_more.mp3",
-      DEPARTMENT_STORE: "department_store.mp3",
-      DRUG_STORE: "drug_store.mp3",
-      ELECTRONICS_STORE: "electronics_store.mp3",
-      FASHION_BOUTIQUE: "fashion_boutique.mp3",
-      GO_10: "move_10_spaces.mp3",
-      GO_11: "move_11_spaces.mp3",
-      GO_12: "move_12_spaces.mp3",
+      SALE: "sale_at_the.mp3",
+      BEEP: "beep.mp3",
+      
+      // movement numbers (4–12)
       GO_4: "move_4_spaces.mp3",
       GO_5: "move_5_spaces.mp3",
       GO_6: "move_6_spaces.mp3",
       GO_7: "move_7_spaces.mp3",
       GO_8: "move_8_spaces.mp3",
       GO_9: "move_9_spaces.mp3",
-      HI_BLUE: "hi_blue.mp3",
-      HI_GREEN: "hi_green.mp3",
-      HI_RED: "hi_red.mp3",
-      HI_YELLOW: "hi_yellow.mp3",
-      HUNGRY_PIZZA: "hungry_meet_friend_pizza_shop.mp3",
-      JEWELRY_STORE: "jewelry_store.mp3",
-      KITCHEN_STORE: "kitchen_store.mp3",
-      LIGHTS_PARKING: "left_lights_on_parking_lot.mp3",
-      LIGHTS_PARKING_LOT: "left_lights_on_parking_lot.mp3",
+      GO_10: "move_10_spaces.mp3",
+      GO_11: "move_11_spaces.mp3",
+      GO_12: "move_12_spaces.mp3",
+      
+      // sale/clearance/bank
+      CHING_CHING: "ching_ching_cash_register.mp3",
+      SPECIAL_SALE: "hey_you_get_a_special_sale.mp3",
+      SPECIAL_CLEARANCE: "hey_you_get_a_special_clearance.mp3",
       LONG_LINE: "long_line_try_again_later.mp3",
-      MEET_ALL_BANK: "meet_all_at_bank.mp3",
-      MEET_BANK: "meet_all_at_bank.mp3",
-      MENS_SHOP: "mens_shop.mp3",
-      MOVE_AND_SEND_FRIEND_ANYWHERE: "send_friend_anywhere.mp3",
+      OUT_OF_STOCK: "sorry_out_of_stock_try_again_later.mp3",
+      COSTS_5_MORE: "your_item_costs_5_more.mp3",
+      BANK_50: "take_50_from_bank.mp3",
+      BANK_75: "take_75_from_bank.mp3",
+      BANK_100: "take_100_from_bank.mp3",
+      BANK_CLOSED: "bank_closed.mp3",
       MOVE_AND_SEND_FRIEND_ARCADE: "send_friend_to_the_arcade.mp3",
       MOVE_AND_SEND_FRIEND_ICECREAM: "send_friend_for_ice_cream.mp3",
-      OUT_OF_STOCK: "sorry_out_of_stock_try_again_later.mp3",
+      MOVE_AND_SEND_FRIEND_ANYWHERE: "send_friend_anywhere.mp3",
+
+      // store name announcements
+      CARD_SHOP: "card_shop.mp3",
+      BOOK_STORE: "book_store.mp3",
+      CAMERA_STORE: "camera_store.mp3",
+      COMPUTER_STORE: "computer_store.mp3",
+      DEPARTMENT_STORE: "department_store.mp3",
+      DRUG_STORE: "drug_store.mp3",
+      ELECTRONICS_STORE: "electronics_store.mp3",
+      FASHION_BOUTIQUE: "fashion_boutique.mp3",
+      JEWELRY_STORE: "jewelry_store.mp3",
+      KITCHEN_STORE: "kitchen_store.mp3",
+      MENS_SHOP: "mens_shop.mp3",
       PET_SHOP: "pet_shop.mp3",
       PHONE_STORE: "phone_store.mp3",
       RECORD_STORE: "record_store.mp3",
-      RESTROOM: "go_to_restroom.mp3",
-      SALE: "sale_at_the.mp3",
       SHOE_STORE: "shoe_store.mp3",
-      SPECIAL_CLEARANCE: "hey_you_get_a_special_clearance.mp3",
-      SPECIAL_SALE: "hey_you_get_a_special_sale.mp3",
       SPORTS_SHOP: "sports_shop.mp3",
       SUNGLASSES_BOUTIQUE: "sunglasses_boutique.mp3",
-      TOY_STORE: "toy_store.mp3",
-      TRY_AGAIN_LATER: "try_again_later.mp3",
-      WORD_AND_AT_THE: "and_at_the.mp3",
-      WORD_CLEARANCE: "clearance_at_the.mp3",
-      WORD_SALE: "sale_at_the.mp3",
-      YOU_HUNGRY_PIZZA: "hungry_meet_friend_pizza_shop.mp3",
+      TOY_STORE: "toy_store.mp3"
     };
 
     let lastAudio = null;
     let lastClipKey = null;
-    let lastMessage = "Select which shopper colors are playing, then press GAME ON.";
 
     function playClip(key, labelText) {
       const src = clips[key];
       if (!src) {
-        updateScreen(labelText ? (labelText + " (no audio mapped: " + key + ")") : ("Missing audio: " + key));
+        if (labelText) {
+          updateScreen(labelText + " (no audio mapped: " + key + ")");
+        } else {
+          updateScreen("Missing audio: " + key);
+        }
         return;
       }
-      if (lastAudio) lastAudio.pause();
+      if (lastAudio) {
+        lastAudio.pause();
+      }
+      const audio = new Audio(src);
+      lastAudio = audio;
+      lastClipKey = key;
+      audio.play().catch(err => {
+        console.error("Audio play error", err);
+      });
+      if (labelText) {
+        updateScreen(labelText);
+      }
+    }
 
+async function playClipSequence(keys, screenText) {
+  // Optional: update screen once at the start
+  if (screenText) updateScreen(screenText);
+
+  for (const key of keys) {
+    const src = clips[key];
+    if (!src) continue;
+
+    await new Promise(resolve => {
       const audio = new Audio(src);
       lastAudio = audio;
       lastClipKey = key;
 
-      audio.play().catch(err => console.error("Audio play error", err));
-      if (labelText) updateScreen(labelText);
-    }
+      audio.addEventListener("ended", resolve);
+      audio.addEventListener("error", resolve);
 
-    async function playClipSequence(keys, screenText) {
-      if (screenText) updateScreen(screenText);
-
-      for (const key of keys) {
-        const src = clips[key];
-        if (!src) continue;
-
-        await new Promise(resolve => {
-          const audio = new Audio(src);
-          lastAudio = audio;
-          lastClipKey = key;
-
-          audio.addEventListener("ended", resolve);
-          audio.addEventListener("error", resolve);
-          audio.play().catch(() => resolve());
-        });
-      }
-    }
+      audio.play().catch(() => resolve());
+    });
+  }
+}
 
     /***********************
      * GAME STATE
      ***********************/
-    // --- "Changing your mind" rule support ---
-    // If a player ends their turn (presses MOVE) and then decides to BUY/BANK before the next
-    // player starts (presses MOVE), allow it. Once the next player starts, it is too late.
-    let pendingEndTurn = false;
-    let pendingEndTurnColor = null;
-
-    // --- "Cancel a Buy" support ---
-    // If a player makes a successful ITEM purchase but then realizes it should be canceled,
-    // pressing BUY again (before the next player starts) will cancel the last successful item buy.
-    let lastSuccessfulItemPurchase = null; // { color, wasSpecial, hadCosts5More, ts }
-
     const COLORS = ["Red", "Blue", "Green", "Yellow"];
-
-    // Per directions, players "check in" by pressing MOVE when they hear their color.
-    // We keep the chips as a visual helper only.
-    let selectedColors = [];        // UI only
-    let activePlayers = [];         // the registered shoppers (driven by MOVE presses during greeting)
-    let players = {};               // e.g. { Red: { items: 0, canBank: true } }
+    let activePlayers = [];
+    let players = {}; // e.g. { Red: { items: 0, canBank: true } }
     let currentPlayerIndex = 0;
-
-    let awaitingMovement = true;    // true = MOVE starts the turn / gives directions; false = MOVE ends turn
-    let targetItems = 6;            // 6 or 10
+    let awaitingMovement = false; // true = MOVE will give directions; false = MOVE will end turn
+    let lastMessage = "Select which shopper colors are playing, then press GAME ON.";
+    let targetItems = 6; // 6 or 10
     let gameStarted = false;
+    let turnsTakenSinceStoreChange = {}; // e.g. { Red: 0, Blue: 0 }
+    let pendingSignChange = false; // when true, next player's turn starts with sign update
 
     const STATE = {
       IDLE: "IDLE",
-      CHECKIN: "CHECKIN",
       RUNNING: "RUNNING"
     };
     let state = STATE.IDLE;
-
-    // Check-in flow
-    const greetOrder = ["Red", "Blue", "Green", "Yellow"];
-    let greetIndex = 0;
-    let greetPass = 1;              // 1 = first pass, 2 = repeat pass for unselected colors
-    let expectedColor = null;       // the color currently being greeted
-    let greetedOnce = {};           // {Red:true,...} tracks whether we already greeted that color on pass 1
 
     /***********************
      * DOM HELPERS
@@ -633,6 +609,7 @@ button {
     }
 
     function rebuildPlayerPanel() {
+      // Clear old rows except title
       const rows = Array.from(playersPanel.querySelectorAll(".player-row"));
       rows.forEach(r => r.remove());
 
@@ -669,283 +646,174 @@ button {
       players = {};
       activePlayers.forEach(color => {
         players[color] = {
-          items: 0,            // counts pegs (not pizza)
-          canBank: true,       // can withdraw? becomes false until they buy something
-          hasJustBought: false
+          items: 0,           // counts pegs (not pizza)
+          canBank: true,      // can withdraw? becomes false until they buy something
+          hasJustBought: false // for internal bookkeeping if you want to extend
         };
+      });
+      turnsTakenSinceStoreChange = {};
+      activePlayers.forEach(color => {
+        turnsTakenSinceStoreChange[color] = 0;
       });
       rebuildPlayerPanel();
     }
 
     /***********************
-     * COLOR CHIPS (visual helper)
+     * COLOR SELECTION (who is playing)
      ***********************/
-    function syncChipUI() {
-      document.querySelectorAll(".color-chip").forEach(chip => {
-        const color = chip.dataset.color;
-        chip.classList.toggle("active", selectedColors.includes(color));
-      });
+document.querySelectorAll(".color-chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    const color = chip.dataset.color;
+
+    // Don't allow changing players once the game has started
+    if (state !== STATE.IDLE && gameStarted) {
+      return;
     }
 
-    document.querySelectorAll(".color-chip").forEach(chip => {
-      chip.addEventListener("click", () => {
-        if (gameStarted) return;
+    const idx = activePlayers.indexOf(color);
+    if (idx === -1) {
+      // Selecting this color
+      activePlayers.push(color);
+      chip.classList.add("active");
 
-        const color = chip.dataset.color;
-        const idx = selectedColors.indexOf(color);
-        if (idx === -1) selectedColors.push(color);
-        else selectedColors.splice(idx, 1);
+      // Play a “Hi <color>” greeting if we have a clip for it
+      const greetingKey =
+        color === "Red"
+          ? "HI_RED"
+          : color === "Blue"
+          ? "HI_BLUE"
+          : color === "Green"
+          ? "HI_GREEN"
+          : color === "Yellow"
+          ? "HI_YELLOW"
+          : null;
 
-        syncChipUI();
-        setStatus(
-          selectedColors.length
-            ? "Optional pre-select: " + selectedColors.join(", ") + ". (Real check-in happens when each player presses MOVE on their greeting.)"
-            : "No colors pre-selected. (That's OK.)"
-        );
-      });
-    });
-
-    /***********************
-     * CHECK-IN (per directions)
-     ***********************/
-    function colorToHiKey(color) {
-      return color === "Red"
-        ? "HI_RED"
-        : color === "Blue"
-        ? "HI_BLUE"
-        : color === "Green"
-        ? "HI_GREEN"
-        : color === "Yellow"
-        ? "HI_YELLOW"
-        : null;
+      if (greetingKey) {
+        playClip(greetingKey, "Hi " + color + " shopper!");
+      }
+    } else {
+      // Deselect this color
+      activePlayers.splice(idx, 1);
+      chip.classList.remove("active");
     }
 
-    async function announceNextGreeting() {
-      if (state !== STATE.CHECKIN) return;
+    setStatus(
+      activePlayers.length
+        ? "Shoppers: " + activePlayers.join(", ")
+        : "No shoppers selected yet."
+    );
+  });
+});
 
-      // Finished both passes?
-      if (greetPass > 2) {
-        finishCheckIn();
-        return;
-      }
-
-      // Find next color to greet this pass
-      while (greetIndex < greetOrder.length) {
-        const color = greetOrder[greetIndex];
-        greetIndex += 1;
-
-        const alreadyRegistered = activePlayers.includes(color);
-        if (greetPass === 1) {
-          expectedColor = color;
-          greetedOnce[color] = true;
-          const hiKey = colorToHiKey(color);
-          const msg = "Hi " + color + "! (Press MOVE now if you're playing.)";
-          await playClipSequence([hiKey], msg);
-          return;
-        }
-
-        // Pass 2: repeat ONLY the unregistered colors
-        if (!alreadyRegistered) {
-          expectedColor = color;
-          const hiKey2 = colorToHiKey(color);
-          const msg2 = "Hi " + color + "! (Last call — press MOVE if you're playing.)";
-          await playClipSequence([hiKey2], msg2);
-          return;
-        }
-      }
-
-      // End of pass: reset index and move to next pass
-      greetIndex = 0;
-      greetPass += 1;
-      expectedColor = null;
-
-      // Immediately continue
-      announceNextGreeting();
-    }
-
-    function handleMoveDuringCheckIn() {
-      if (!expectedColor) return;
-
-      const c = expectedColor;
-      if (!activePlayers.includes(c)) {
-        activePlayers.push(c);
-
-        // Highlight chip for convenience
-        if (!selectedColors.includes(c)) selectedColors.push(c);
-        syncChipUI();
-
-        updateScreen("Registered: " + c + " shopper. (Wait for the next greeting.)");
-        setStatus("Registered shoppers: " + activePlayers.join(", "));
-      } else {
-        updateScreen(c + " is already registered.");
-      }
-
-      // Continue to next greeting
-      announceNextGreeting();
-    }
-
-    function finishCheckIn() {
-      if (!activePlayers.length) {
-        updateScreen("No shoppers checked in. Press GAME ON again and press MOVE when you hear your color.");
-        setStatus("");
-        state = STATE.IDLE;
-        gameStarted = false;
-        setPowerLed(false);
-        setTurnLed(false);
-        return;
-      }
-
-      // Directions: after all shoppers pressed MOVE, announce signs.
-      state = STATE.RUNNING;
-      initPlayers();
-      currentPlayerIndex = 0;
-      awaitingMovement = true;
-      setTurnLed(true);
-
-      updateScreen("All set! Position the signs: one CLEARANCE and two SALES will be announced.");
-      resetCycleTurnCounts();
-      announceSalesAndClearance();
-
-      const first = getCurrentPlayerColor();
-      if (first) {
-        setStatus(
-          first +
-            "'s turn. On your turn: press MOVE to start, follow the Voice, move your piece, then BUY/BANK if you can, then press MOVE again to end your turn."
-        );
-        updateScreen(first + ", press MOVE to start your turn.");
-      }
-    }
 
     /***********************
      * GAME FLOW
      ***********************/
     function startGameOn() {
-      // Reset
-      resetSignsForNewGame();
-      state = STATE.CHECKIN;
+      if (!activePlayers.length) {
+        updateScreen("Choose at least one shopper color before pressing GAME ON.");
+        return;
+      }
+      state = STATE.RUNNING;
       gameStarted = true;
+      pendingSignChange = false;
+      resetStorePool();
       setPowerLed(true);
-      setTurnLed(false);
-
-      activePlayers = [];
-      players = {};
+      initPlayers();
       currentPlayerIndex = 0;
       awaitingMovement = true;
 
-      greetIndex = 0;
-      greetPass = 1;
-      expectedColor = null;
-      greetedOnce = { Red: false, Blue: false, Green: false, Yellow: false };
+      // Greeting: “Hi Red! Hi Blue! Hi Green! Hi Yellow!” in order of active players.
+      const greetingOrder = ["Red", "Blue", "Green", "Yellow"].filter(c =>
+        activePlayers.includes(c)
+      );
+      const greetText = greetingOrder.length
+        ? "Hi " + greetingOrder.join("! Hi ") + "!"
+        : "Hi Shoppers!";
+      
+        const fullGreeting =
+        greetText +
+        " Place your shoppers in the parking lots. Then wait for your turn.";
+        
+        // Play GAME_ON first, then do the sales/clearance announcement
+        playClipSequence(["GAME_ON"], fullGreeting).then(() => {
+        announceSalesAndClearance();
+        });
 
-      updateScreen("GAME ON! Listen for your color. Press MOVE immediately when you hear it.");
-      setStatus("Check-in: Press MOVE on your greeting. Unselected colors will be repeated once.");      // Start the greeting cycle (HI_COLOR check-in)
-      announceNextGreeting();
-}
 
-    
-    // Stores for Sales/Clearance signs (must not repeat within a game)
-    const ALL_STORES = [
-      "Book Store",
-      "Camera Store",
-      "Card Shop",
-      "Computer Store",
-      "Department Store",
-      "Drug Store",
-      "Electronics",
-      "Fashion Boutique",
-      "Jewelry Store",
-      "Kitchen Store",
-      "Men's Shop",
-      "Pet Shop",
-      "Phone Store",
-      "Record Store",
-      "Shoe Store",
-      "Sports Shop",
-      "Sunglasses Boutique",
-      "Toy Store"
-    ];
-
-    let unusedStores = [];
-    let currentSignStores = null; // { clearanceStore, sale1, sale2 }
-    let cycleTurnCounts = {}; // { [color]: number } turns taken since last sign change
-
-    function resetSignsForNewGame() {
-      unusedStores = shuffle([...ALL_STORES]);
-      currentSignStores = null;
-      cycleTurnCounts = {};
-    }
-
-    function drawNextSignStores() {
-      // If we've exhausted the pool (fewer than 3 stores left), restart the list so we can cycle again.
-      if (unusedStores.length < 3) {
-        unusedStores = shuffle([...ALL_STORES]);
+      const first = getCurrentPlayerColor();
+      if (first) {
+        setStatus(
+          first +
+            "'s turn. On your turn: Press MOVE, follow the Voice, move your piece, then BUY/BANK if you can, then press MOVE again to end your turn."
+        );
       }
-      const clearanceStore = unusedStores.shift();
-      const sale1 = unusedStores.shift();
-      const sale2 = unusedStores.shift();
-      return { clearanceStore, sale1, sale2 };
-    }
-
-    function resetCycleTurnCounts() {
-      cycleTurnCounts = {};
-      activePlayers.forEach(c => (cycleTurnCounts[c] = 0));
-    }
-
-    function recordCompletedTurnAndMaybeChangeSigns(colorJustPlayed) {
-      if (!colorJustPlayed) return;
-
-      if (cycleTurnCounts[colorJustPlayed] == null) cycleTurnCounts[colorJustPlayed] = 0;
-      cycleTurnCounts[colorJustPlayed] += 1;
-
-      const everyoneHasTwoTurns =
-        activePlayers.length > 0 && activePlayers.every(c => (cycleTurnCounts[c] || 0) >= 2);
-
-      if (!everyoneHasTwoTurns) return;
-
-      // After each player gets 2 turns, change the signs (no repeats)
-      resetCycleTurnCounts();
-      announceSalesAndClearance();
+      setTurnLed(true);
     }
 
 const STORE_AUDIO_MAP = {
-      "Card Shop": "CARD_SHOP",
-      "Book Store": "BOOK_STORE",
-      "Camera Store": "CAMERA_STORE",
-      "Computer Store": "COMPUTER_STORE",
-      "Department Store": "DEPARTMENT_STORE",
-      "Drug Store": "DRUG_STORE",
-      "Electronics": "ELECTRONICS_STORE",
-      "Fashion Boutique": "FASHION_BOUTIQUE",
-      "Jewelry Store": "JEWELRY_STORE",
-      "Kitchen Store": "KITCHEN_STORE",
-      "Men's Shop": "MENS_SHOP",
-      "Pet Shop": "PET_SHOP",
-      "Phone Store": "PHONE_STORE",
-      "Record Store": "RECORD_STORE",
-      "Shoe Store": "SHOE_STORE",
-      "Sports Shop": "SPORTS_SHOP",
-      "Sunglasses Boutique": "SUNGLASSES_BOUTIQUE",
-      "Toy Store": "TOY_STORE"
-    };
+  "Card Shop": "CARD_SHOP",
+  "Book Store": "BOOK_STORE",
+  "Camera Store": "CAMERA_STORE",
+  "Computer Store": "COMPUTER_STORE",
+  "Department Store": "DEPARTMENT_STORE",
+  "Drug Store": "DRUG_STORE",
+  "Electronics": "ELECTRONICS_STORE",
+  "Fashion Boutique": "FASHION_BOUTIQUE",
+  "Jewelry Store": "JEWELRY_STORE",
+  "Kitchen Store": "KITCHEN_STORE",
+  "Men's Shop": "MENS_SHOP",
+  "Pet Shop": "PET_SHOP",
+  "Phone Store": "PHONE_STORE",
+  "Record Store": "RECORD_STORE",
+  "Shoe Store": "SHOE_STORE",
+  "Sports Shop": "SPORTS_SHOP",
+  "Sunglasses Boutique": "SUNGLASSES_BOUTIQUE",
+  "Toy Store": "TOY_STORE"
+};
 
+
+// Store rotation (no repeats until pool is low, then recycle)
+const ALL_STORES = [
+  "Book Store",
+  "Camera Store",
+  "Card Shop",
+  "Computer Store",
+  "Department Store",
+  "Drug Store",
+  "Electronics",
+  "Fashion Boutique",
+  "Jewelry Store",
+  "Kitchen Store",
+  "Men's Shop",
+  "Pet Shop",
+  "Phone Store",
+  "Record Store",
+  "Shoe Store",
+  "Sports Shop",
+  "Sunglasses Boutique",
+  "Toy Store"
+];
+
+let storePool = []; // unused stores for this cycle
+
+function resetStorePool() {
+  storePool = shuffle(ALL_STORES);
+}
+
+function draw3UniqueStores() {
+  // If fewer than 3 unused stores left, restart the list to cycle through all again
+  if (storePool.length < 3) resetStorePool();
+
+  const clearanceStore = storePool.pop();
+  const sale1 = storePool.pop();
+  const sale2 = storePool.pop();
+
+  return { clearanceStore, sale1, sale2 };
+}
+    
     function announceSalesAndClearance() {
-      // Pick the next 3 unique stores for this game (no repeats)
-      if (!currentSignStores) {
-        currentSignStores = drawNextSignStores();
-      } else {
-        currentSignStores = drawNextSignStores();
-      }
-
-      if (!currentSignStores) {
-        const msg = "Unable to select new sign stores. (Store list may be missing.)";
-        updateScreen(msg);
-        setStatus("Signs could not rotate.");
-        return;
-      }
-
-      const clearanceStore = currentSignStores.clearanceStore;
-      const sale1 = currentSignStores.sale1;
-      const sale2 = currentSignStores.sale2;
+      const { clearanceStore, sale1, sale2 } = draw3UniqueStores();
 
       const msg =
         "Attention mall shoppers! Clearance at " +
@@ -960,39 +828,45 @@ const STORE_AUDIO_MAP = {
 
       const audioSequence = [
         "ATTENTION_SHOPPERS",
-        "WORD_CLEARANCE",
+        "CLEARANCE",
         STORE_AUDIO_MAP[clearanceStore],
-        "WORD_SALE",
+        "SALE",
         STORE_AUDIO_MAP[sale1],
-        "WORD_AND_AT_THE",
+        "AND_AT_THE",
         STORE_AUDIO_MAP[sale2]
-      ].filter(Boolean);
+      ];
 
-      playClipSequence(audioSequence, msg);
+      return playClipSequence(audioSequence, msg);
     }
 
-    function issueMovementForCurrentPlayer() {
-      const color = getCurrentPlayerColor();
-      if (!color) return;
+function issueMovementForCurrentPlayer() {
+  const color = getCurrentPlayerColor();
+  if (!color) return;
 
-      const r = Math.random();
-      if (r < 0.8) {
-        const spaces = Math.floor(Math.random() * 9) + 4; // 4–12
-        const clipKey = "GO_" + spaces;
-        const msg =
-          color +
-          "... move " +
-          spaces +
-          " spaces. (No diagonals. You can move forward/back/left/right. Enter stores through doors only.)";
-        playClip(clipKey, msg);
-        setStatus(
-          "Tip: On your first turn, move from the parking lot to the Entrance space (counts as 1). You don't have to use the full count when entering a store or the bank."
-        );
-      } else {
-        triggerSpecialEvent(color);
-      }
-      awaitingMovement = false;
-    }
+  // Decide between numeric movement vs. special location
+  const r = Math.random();
+  if (r < 0.8) {
+    // About 80% of the time: normal movement
+    const spaces = Math.floor(Math.random() * 9) + 4; // 4–12
+    const clipKey = "GO_" + spaces;
+    const msg =
+      color +
+      "... move " +
+      spaces +
+      " space" +
+      (spaces === 1 ? "" : "s") +
+      ". Remember: move along spaces, no diagonals, and enter stores through doors only.";
+    playClip(clipKey, msg);
+    setStatus(
+      "Try to move into a store to buy, or into the bank for cash. You don't have to use the full count when entering a store or bank."
+    );
+  } else {
+    // About 20% of the time: special movement events from the directions
+    triggerSpecialEvent(color);
+  }
+  awaitingMovement = false; // now we're in the “take actions” phase
+}
+
 
     function triggerSpecialEvent(color) {
       const events = [
@@ -1018,7 +892,10 @@ const STORE_AUDIO_MAP = {
               color +
               ", each shopper uses BANK. The banker gives out $50, $75, or $100 as announced."
           );
-          activePlayers.forEach(c => (players[c].canBank = true));
+          // For fairness, after this, everyone may bank again, even if they already went.
+          activePlayers.forEach(c => {
+            players[c].canBank = true;
+          });
           rebuildPlayerPanel();
           break;
 
@@ -1045,30 +922,45 @@ const STORE_AUDIO_MAP = {
           break;
 
         case "MOVE_AND_SEND_FRIEND_ARCADE": {
-          const spaces = Math.floor(Math.random() * 9) + 4;
-          const clipKey = "GO_" + spaces;
-          msg = color + "... Move " + spaces + " spaces and send a friend to the Arcade.";
-          // Play "move X" then "send friend to arcade"
-          playClipSequence([clipKey, "MOVE_AND_SEND_FRIEND_ARCADE"], msg);
-          setStatus("After moving, choose an opponent and move them to the Arcade. They cannot buy or bank on your turn.");
+          const spaces = Math.floor(Math.random() * 9) + 4; // 4–12
+          msg =
+            color +
+            "... Move " +
+            spaces +
+            " spaces and send a friend to the Arcade.";
+          updateScreen(msg);
+          // You can optionally map a specific clip here
+          setStatus(
+            "After moving, choose an opponent and move their shopper to the Arcade. They cannot buy or bank on your turn."
+          );
           break;
         }
 
         case "MOVE_AND_SEND_FRIEND_ICECREAM": {
-          const spaces2 = Math.floor(Math.random() * 9) + 4;
-          const clipKey2 = "GO_" + spaces2;
-          msg = color + "... Move " + spaces2 + " spaces and send a friend for Ice Cream.";
-          playClipSequence([clipKey2, "MOVE_AND_SEND_FRIEND_ICECREAM"], msg);
-          setStatus("After moving, choose an opponent and move them for Ice Cream. They cannot buy or bank on your turn.");
+          const spaces2 = Math.floor(Math.random() * 9) + 4; // 4–12
+          msg =
+            color +
+            "... Move " +
+            spaces2 +
+            " spaces and send a friend for Ice Cream.";
+          updateScreen(msg);
+          setStatus(
+            "After moving, choose an opponent and move their shopper to the Ice Cream shop. They cannot buy or bank on your turn."
+          );
           break;
         }
 
         case "MOVE_AND_SEND_FRIEND_ANYWHERE": {
-          const spaces3 = Math.floor(Math.random() * 9) + 4;
-          const clipKey3 = "GO_" + spaces3;
-          msg = color + "... Move " + spaces3 + " spaces and send a friend anywhere.";
-          playClipSequence([clipKey3, "MOVE_AND_SEND_FRIEND_ANYWHERE"], msg);
-          setStatus("After moving, choose an opponent and move them anywhere. They cannot buy or bank on your turn.");
+          const spaces3 = Math.floor(Math.random() * 9) + 4; // 4–12
+          msg =
+            color +
+            "... Move " +
+            spaces3 +
+            " spaces and send a friend anywhere.";
+          updateScreen(msg);
+          setStatus(
+            "After moving, choose an opponent and move their shopper to any space (store or bank). They still cannot buy or bank on your turn."
+          );
           break;
         }
       }
@@ -1078,77 +970,85 @@ const STORE_AUDIO_MAP = {
       const color = getCurrentPlayerColor();
       if (!color) return;
 
-      const p = players[color];
-      if (p.items >= targetItems) {
-        updateScreen(color + ", if your shopper is back at your own parking lot, you win the game!");
-        setStatus("Win condition: buy " + targetItems + " different items and return to your parking lot.");
-        awaitingMovement = true;
-        return;
+      // Count this completed turn for the current player
+      if (turnsTakenSinceStoreChange[color] == null) turnsTakenSinceStoreChange[color] = 0;
+      turnsTakenSinceStoreChange[color] += 1;
+
+      // If everyone has taken 2 turns, queue a sign change for the START of the next player's turn
+      const everyoneHasTwoTurns = activePlayers.every(
+        c => (turnsTakenSinceStoreChange[c] || 0) >= 2
+      );
+      if (everyoneHasTwoTurns) {
+        activePlayers.forEach(c => (turnsTakenSinceStoreChange[c] = 0));
+        pendingSignChange = true;
       }
 
-      // Mark the turn as ended, but don't advance to the next player until they START their turn.
-      pendingEndTurn = true;
-      pendingEndTurnColor = color;
+      // Check win condition: 6 (or 10) items and at parking lot (physically)
+      const p = players[color];
+      if (p.items >= targetItems) {
+        updateScreen(
+          color +
+            ", if your shopper is back at your own parking lot, you win the game!"
+        );
+        setStatus("Be the first to buy " + targetItems + " different items and return to your parking lot.");
+        // You can stop further turns if you want by setting state = STATE.IDLE
+      } else {
+        // Next player
+        currentPlayerIndex = (currentPlayerIndex + 1) % activePlayers.length;
+        const nextColor = getCurrentPlayerColor();
+        setStatus(
+          nextColor +
+            "'s turn. Press MOVE to start, follow the announcement, then MOVE again to end your turn."
+        );
+        updateScreen(nextColor + ", press MOVE to start your turn.");
+      }
       awaitingMovement = true;
-
-      // Announce next player (without committing the turn order yet).
-      const nextIndex = (currentPlayerIndex + 1) % activePlayers.length;
-      const nextColor = activePlayers[nextIndex];
-      setStatus(nextColor + "'s turn. Press MOVE to start. (If " + color + " needs to BUY/BANK, do it now, then press MOVE again.)");
-      updateScreen(nextColor + ", press MOVE to start your turn.");
     }
 
     /***********************
      * BUY & BANK LOGIC
      ***********************/
     function handleBuy() {
-      playClip("BEEP");
-      // Cancel a 'Buy' (Directions): If the player just made a successful ITEM purchase and
-      // immediately realizes it should be canceled, pressing BUY again (before ending their turn)
-      // plays TRY_AGAIN_LATER and removes the last peg we awarded.
-      const cancelColor = getCurrentPlayerColor();
-      if (state === STATE.RUNNING && cancelColor && lastSuccessfulItemPurchase &&
-          lastSuccessfulItemPurchase.color === cancelColor && awaitingMovement === false) {
-        const p = players[cancelColor];
-        if (p && p.items > 0) {
-          p.items -= 1;
-          lastSuccessfulItemPurchase = null;
-          rebuildPlayerPanel();
-          playClip("TRY_AGAIN_LATER", cancelColor + "... Try again later.");
-          setStatus("Buy canceled. Insert your card again only if you truly want to buy.");
-          return;
-        }
-      }
-
       if (state !== STATE.RUNNING) {
-        updateScreen(state === STATE.CHECKIN ? "During check-in, press MOVE when you hear your color." : "Press GAME ON to start a game first.");
+        updateScreen("Press GAME ON to start a game first.");
         return;
       }
       const color = getCurrentPlayerColor();
       if (!color) return;
-
       const p = players[color];
       const purchaseType = purchaseTypeSelect.value; // "item" or "pizza"
+
+      // Random outcome pieces
       const baseRoll = Math.random();
       const extraFiveRoll = Math.random();
+
       let msg = "";
 
       if (purchaseType === "pizza") {
+        // Pizza is special: never discounted, sometimes costs $5 more, no peg.
         if (baseRoll < 0.25) {
-          msg = color + "... Long line at the Pizza Shop. Try again later! Move out and back in on a future turn to try again.";
+          // can't buy pizza this time
+          msg =
+            color +
+            "... Long line at the Pizza Shop. Try again later! Move out and back in on a future turn to try again.";
           playClip("LONG_LINE", msg);
         } else {
+          // successful pizza
           let extra = "";
           if (extraFiveRoll < 0.25) {
-            extra = " Today your pizza costs $5 more than usual. Pay $10 instead of $5.";
+            extra =
+              " Today your pizza costs $5 more than usual. Pay $10 instead of $5.";
             playClip("COSTS_5_MORE", color + "... your pizza costs $5 more.");
           } else {
             extra = " Pay $5 for pizza.";
           }
 
-          msg = color + "... Ching ching! You bought pizza. " + extra + " You do not get a peg, but now you may go back to the bank on a later turn.";
+          msg =
+            color +
+            "... Ching ching! You bought pizza. " +
+            extra +
+            " You do not get a peg, but now you may go back to the bank on a later turn.";
           playClip("CHING_CHING", msg);
-
           p.canBank = true; // pizza “unlocks” the bank
           p.hasJustBought = true;
         }
@@ -1156,25 +1056,41 @@ const STORE_AUDIO_MAP = {
         return;
       }
 
+      // Regular store item (with peg)
       if (baseRoll < 0.15) {
+        // Out of stock / long line
         const choice = Math.random() < 0.5 ? "LONG_LINE" : "OUT_OF_STOCK";
         const clipKey = choice === "LONG_LINE" ? "LONG_LINE" : "OUT_OF_STOCK";
         msg =
           color +
           "... " +
-          (choice === "LONG_LINE" ? "Long line, try again later!" : "I'm sorry, we're out of stock, try again later!");
+          (choice === "LONG_LINE"
+            ? "Long line, try again later!"
+            : "I'm sorry, we're out of stock. Try again later!");
         playClip(clipKey, msg);
-        setStatus("On your next turn (if you are still in this store), you may move out and right back in to try again.");
+        setStatus(
+          "On your next turn, if you are still in this store, you may move out and right back in to try again."
+        );
+        // Does NOT count as purchase; bank rules unaffected
       } else if (baseRoll < 0.6) {
-        msg = color + "... Ching ching! Check your shopping list card for the item price. Pay regular price unless there's a sale or clearance sign in this store.";
+        // Standard “Ching ching” buy
+        msg =
+          color +
+          "... Ching ching! Check your shopping list card for the item price. Pay regular price unless there's a sale or clearance sign in this store.";
         playClip("CHING_CHING", msg);
-        handleSuccessfulItemPurchase(p, null, extraFiveRoll, color);
+        handleSuccessfulItemPurchase(p, /*specialType=*/ null, extraFiveRoll, color);
       } else if (baseRoll < 0.8) {
-        msg = color + "... Hey! You get a special sale! Pay the special sale price shown on your card.";
+        // Special sale
+        msg =
+          color +
+          "... Hey! You get a special sale! Pay the special sale price shown on your card.";
         playClip("SPECIAL_SALE", msg);
         handleSuccessfulItemPurchase(p, "sale", extraFiveRoll, color);
       } else {
-        msg = color + "... Hey! You get a special clearance! Pay the special clearance price shown on your card.";
+        // Special clearance
+        msg =
+          color +
+          "... Hey! You get a special clearance! Pay the special clearance price shown on your card.";
         playClip("SPECIAL_CLEARANCE", msg);
         handleSuccessfulItemPurchase(p, "clearance", extraFiveRoll, color);
       }
@@ -1183,31 +1099,40 @@ const STORE_AUDIO_MAP = {
     }
 
     function handleSuccessfulItemPurchase(player, specialType, extraFiveRoll, color) {
-      // Track last successful ITEM purchase for optional cancellation (Directions: 'Cancel a Buy').
-      lastSuccessfulItemPurchase = { color, ts: Date.now() };
+      // Increase peg count
       player.items += 1;
-      player.canBank = true;
+      player.canBank = true; // after buying, they may bank again
       player.hasJustBought = true;
 
       if (extraFiveRoll < 0.2) {
-        const msg2 = color + "... Your item costs $5 more. Whatever you would have paid, add $5 to the total.";
+        // “Your item costs $5 more!”
+        const msg2 =
+          color +
+          "... Your item costs $5 more. Whatever you would have paid, add $5 to the total.";
         playClip("COSTS_5_MORE", msg2);
-        setStatus("Whatever you would have paid, add $5.");
+        setStatus(
+          "The Voice always has the final word. Consult your shopping list and adjust the price by +$5."
+        );
       } else {
         if (specialType === "sale") {
-          setStatus("Pay the special sale price shown on your card (Voice has the final word).");
+          setStatus(
+            "Pay the special sale price on your list. If there was a clearance sign, you still pay the sale price because the Voice said 'special sale'."
+          );
         } else if (specialType === "clearance") {
-          setStatus("Pay the special clearance price shown on your card (Voice has the final word).");
+          setStatus(
+            "Pay the special clearance price on your list. If there was a sale sign, you pay the lower clearance price."
+          );
         } else {
-          setStatus("Pay regular / sale / clearance price based on the signs in the store, as shown on your shopping list card.");
+          setStatus(
+            "Pay regular / sale / clearance price based on the signs in the store, as shown on your shopping list card."
+          );
         }
       }
     }
 
     function handleBank() {
-      playClip("BEEP");
       if (state !== STATE.RUNNING) {
-        updateScreen(state === STATE.CHECKIN ? "During check-in, press MOVE when you hear your color." : "Press GAME ON to start a game first.");
+        updateScreen("Press GAME ON to start a game first.");
         return;
       }
       const color = getCurrentPlayerColor();
@@ -1215,28 +1140,44 @@ const STORE_AUDIO_MAP = {
       const p = players[color];
 
       if (!p.canBank) {
-        const msg = color + "... Bank closed. You must buy something before you can withdraw cash again.";
+        // “Bank closed” rule: you must buy something (or pizza) before next withdrawal.
+        const msg =
+          color +
+          "... Bank closed. You must buy something before you can withdraw cash again.";
         playClip("BANK_CLOSED", msg);
-        setStatus("After taking money from the bank, you can't go back until you buy something (or pizza).");
+        setStatus(
+          "Remember: once you get money from the bank, you can't go back until you buy an item or pizza."
+        );
         return;
       }
 
+      // If allowed, choose how much the bank gives
       const roll = Math.random();
       let amount = 50;
       let clipKey = "BANK_50";
 
       if (roll < 0.33) {
-        amount = 50; clipKey = "BANK_50";
+        amount = 50;
+        clipKey = "BANK_50";
       } else if (roll < 0.66) {
-        amount = 75; clipKey = "BANK_75";
+        amount = 75;
+        clipKey = "BANK_75";
       } else {
-        amount = 100; clipKey = "BANK_100";
+        amount = 100;
+        clipKey = "BANK_100";
       }
 
-      const msg = color + "... Take $" + amount + " from the bank. The banker should count out the money to you.";
+      const msg =
+        color +
+        "... Take $" +
+        amount +
+        " from the bank. The banker should count out the money to you.";
       playClip(clipKey, msg);
-      setStatus("After withdrawing, you must buy something before the bank will serve you again.");
+      setStatus(
+        "After withdrawing, you must buy something before the bank will serve you again."
+      );
 
+      // After a successful withdrawal, lock banking until they buy again
       p.canBank = false;
       p.hasJustBought = false;
       rebuildPlayerPanel();
@@ -1246,74 +1187,77 @@ const STORE_AUDIO_MAP = {
      * BUTTON HANDLERS
      ***********************/
     document.getElementById("btn-game-on").addEventListener("click", () => {
-      if (state !== STATE.IDLE) return;
       startGameOn();
     });
 
-    
     document.getElementById("btn-move").addEventListener("click", () => {
-      if (state === STATE.IDLE) {
+      // 🔊 Button press beep
+      playClip("BEEP");
+      if (state !== STATE.RUNNING) {
         updateScreen("Press GAME ON to start a new game.");
         return;
       }
 
-      if (state === STATE.CHECKIN) {
-        // Per directions: press MOVE when you hear your color.
-        handleMoveDuringCheckIn();
-        return;
-      }
-
-      // RUNNING
       const color = getCurrentPlayerColor();
       if (!color) {
-        updateScreen("No shoppers checked in. Press GAME ON and press MOVE when you hear your color.");
+        updateScreen("No shoppers selected. Choose colors and press GAME ON.");
         return;
       }
 
       if (awaitingMovement) {
-        // If the previous player ended their turn, this MOVE starts the next player's turn.
-        if (pendingEndTurn) {
-          // Record the completed turn for the player who actually played.
-          recordCompletedTurnAndMaybeChangeSigns(pendingEndTurnColor);
+        // Start of turn
 
-          // Advance to next player now.
-          currentPlayerIndex = (currentPlayerIndex + 1) % activePlayers.length;
-          pendingEndTurn = false;
-          pendingEndTurnColor = null;
+        // If a sign change is queued, do it NOW (start of this player's turn),
+        // then after the announcement finishes, issue movement.
+        if (pendingSignChange) {
+          pendingSignChange = false;
+
+          announceSalesAndClearance().then(() => {
+            updateScreen(color + ", it's your turn. Listen carefully!");
+            issueMovementForCurrentPlayer();
+          });
+
+          return;
         }
 
-        // Start-of-turn cue
-        playClip("BEEP");
-        const current = getCurrentPlayerColor();
-        updateScreen(current + ", it's your turn. Listen carefully!");
+        updateScreen(color + ", it's your turn. Listen carefully!");
         issueMovementForCurrentPlayer();
       } else {
-        // End-of-turn
+        // End of turn
         endTurnAndAdvance();
       }
     });
 
-document.getElementById("btn-repeat").addEventListener("click", () => {
+    document.getElementById("btn-repeat").addEventListener("click", () => {
       if (lastClipKey) {
-        // Repeat the last audio clip and keep the same screen text
-        playClip(lastClipKey, lastMessage);
+        playClip(lastClipKey, "Repeating: " + lastMessage);
       } else {
         updateScreen("Nothing to repeat yet.");
       }
     });
 
-    document.getElementById("btn-buy").addEventListener("click", () => handleBuy());
-    document.getElementById("btn-bank").addEventListener("click", () => handleBank());
+	document.getElementById("btn-buy").addEventListener("click", () => {
+	  playClip("BEEP");
+	  handleBuy();
+	});
+
+    document.getElementById("btn-bank").addEventListener("click", () => {
+	  playClip("BEEP");
+	  handleBank();
+	});
 
     document.getElementById("btn-long-game").addEventListener("click", () => {
       targetItems = targetItems === 6 ? 10 : 6;
       updateScreen(
-        (targetItems === 10 ? "Shop till you drop!" : "Standard game!") +
-          " You must buy " +
+        "Shop till you drop! You must now buy " +
           targetItems +
           " different items and return to your parking lot to win."
       );
-      setStatus(targetItems === 6 ? "First to 6 items + parking lot wins." : "First to 10 items + parking lot wins.");
+      setStatus(
+        targetItems === 6
+          ? "Standard game: first to 6 items + parking lot wins."
+          : "Long game: first to 10 items + parking lot wins."
+      );
     });
 
     // PWA: register service worker
