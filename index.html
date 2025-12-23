@@ -434,13 +434,13 @@
      ***********************/
     const clips = {
       TRY_AGAIN_LATER: "try_again_later.mp3",
-      
+
       // color greetings
       HI_RED: "hi_red.mp3",
       HI_BLUE: "hi_blue.mp3",
       HI_GREEN: "hi_green.mp3",
       HI_YELLOW: "hi_yellow.mp3",
-      
+
       // phrase / word clips
       ATTENTION_SHOPPERS: "attention_mall_shoppers.mp3",
       MEET_BANK: "meet_all_at_bank.mp3",
@@ -451,7 +451,7 @@
       CLEARANCE: "clearance_at_the.mp3",
       SALE: "sale_at_the.mp3",
       BEEP: "beep.mp3",
-      
+
       // movement numbers (4–12)
       GO_4: "move_4_spaces.mp3",
       GO_5: "move_5_spaces.mp3",
@@ -462,7 +462,7 @@
       GO_10: "move_10_spaces.mp3",
       GO_11: "move_11_spaces.mp3",
       GO_12: "move_12_spaces.mp3",
-      
+
       // sale/clearance/bank
       CHING_CHING: "ching_ching_cash_register.mp3",
       SPECIAL_SALE: "hey_you_get_a_special_sale.mp3",
@@ -619,67 +619,6 @@ async function playClipSequence(keys, screenText) {
       activePlayers.forEach(color => {
         const p = players[color];
 
-      // Special mode: "Meet everyone at the bank" round
-      if (bankMeetingMode) {
-        const expected = bankMeetingQueue[bankMeetingIndex];
-
-        // Enforce the order: current player first, then next, etc.
-        if (color !== expected) {
-          updateScreen(
-            "Bank meeting in progress. It's " + expected + "'s turn to withdraw."
-          );
-          setStatus("Pass the device to " + expected + " and press BANK.");
-          return;
-        }
-
-        // Proceed with a withdrawal (ignore p.canBank entirely)
-        const roll = Math.random();
-        let amount = 50;
-        let clipKey = "BANK_50";
-
-        if (roll < 0.33) {
-          amount = 50;
-          clipKey = "BANK_50";
-        } else if (roll < 0.66) {
-          amount = 75;
-          clipKey = "BANK_75";
-        } else {
-          amount = 100;
-          clipKey = "BANK_100";
-        }
-
-        const msg =
-          color +
-          "... Take $" +
-          amount +
-          " from the bank. The banker should count out the money to you.";
-        playClip(clipKey, msg);
-
-        // Advance to next player in the bank meeting
-        bankMeetingIndex += 1;
-
-        if (bankMeetingIndex >= bankMeetingQueue.length) {
-          // Meeting finished: bank becomes CLOSED for everyone until they buy something
-          bankMeetingMode = false;
-          bankMeetingQueue = [];
-          bankMeetingIndex = 0;
-
-          activePlayers.forEach(c => {
-            players[c].canBank = false;
-            players[c].hasJustBought = false;
-          });
-          rebuildPlayerPanel();
-
-          updateScreen("Bank meeting complete. The bank is now closed until you buy something.");
-          setStatus("Each shopper must BUY (item or pizza) before withdrawing again.");
-        } else {
-          const nextBanker = bankMeetingQueue[bankMeetingIndex];
-          setStatus("Next: " + nextBanker + " presses BANK to withdraw once.");
-        }
-
-        return;
-      }
-
         const row = document.createElement("div");
         row.className = "player-row";
 
@@ -798,11 +737,11 @@ document.querySelectorAll(".color-chip").forEach(chip => {
       const greetText = greetingOrder.length
         ? "Hi " + greetingOrder.join("! Hi ") + "!"
         : "Hi Shoppers!";
-      
+
         const fullGreeting =
         greetText +
         " Place your shoppers in the parking lots. Then wait for your turn.";
-        
+
         // Play GAME_ON first, then do the sales/clearance announcement
         playClipSequence(["GAME_ON"], fullGreeting).then(() => {
         announceSalesAndClearance();
@@ -879,7 +818,7 @@ function draw3UniqueStores() {
 
   return { clearanceStore, sale1, sale2 };
 }
-    
+
     function announceSalesAndClearance() {
       const { clearanceStore, sale1, sale2 } = draw3UniqueStores();
 
@@ -950,7 +889,7 @@ function issueMovementForCurrentPlayer() {
       let msg = "";
 
       switch (eventKey) {
-                case "MEET_BANK": {
+        case "MEET_BANK": {
           msg =
             color +
             "... Meet all shoppers at the bank. Everyone move to the bank space. Take turns inserting credit cards and follow the BANK button instructions.";
@@ -962,7 +901,9 @@ function issueMovementForCurrentPlayer() {
           // Build a queue starting from the CURRENT player, wrapping around
           bankMeetingQueue = [];
           for (let i = 0; i < activePlayers.length; i++) {
-            bankMeetingQueue.push(activePlayers[(currentPlayerIndex + i) % activePlayers.length]);
+            bankMeetingQueue.push(
+              activePlayers[(currentPlayerIndex + i) % activePlayers.length]
+            );
           }
           bankMeetingIndex = 0;
 
@@ -1216,6 +1157,65 @@ function issueMovementForCurrentPlayer() {
       const color = getCurrentPlayerColor();
       if (!color) return;
       const p = players[color];
+
+      // Special mode: "Meet everyone at the bank" round
+      if (bankMeetingMode) {
+        const expected = bankMeetingQueue[bankMeetingIndex];
+
+        // Enforce the order: current player first, then next, etc.
+        if (color !== expected) {
+          updateScreen("Bank meeting in progress. It's " + expected + "'s turn to withdraw.");
+          setStatus("Pass the device to " + expected + " and press BANK.");
+          return;
+        }
+
+        // Proceed with a withdrawal (ignore p.canBank entirely)
+        const roll = Math.random();
+        let amount = 50;
+        let clipKey = "BANK_50";
+
+        if (roll < 0.33) {
+          amount = 50;
+          clipKey = "BANK_50";
+        } else if (roll < 0.66) {
+          amount = 75;
+          clipKey = "BANK_75";
+        } else {
+          amount = 100;
+          clipKey = "BANK_100";
+        }
+
+        const msg =
+          color +
+          "... Take $" +
+          amount +
+          " from the bank. The banker should count out the money to you.";
+        playClip(clipKey, msg);
+
+        // Advance to next player in the bank meeting
+        bankMeetingIndex += 1;
+
+        if (bankMeetingIndex >= bankMeetingQueue.length) {
+          // Meeting finished: bank becomes CLOSED for everyone until they buy something
+          bankMeetingMode = false;
+          bankMeetingQueue = [];
+          bankMeetingIndex = 0;
+
+          activePlayers.forEach(c => {
+            players[c].canBank = false;
+            players[c].hasJustBought = false;
+          });
+
+          rebuildPlayerPanel();
+          updateScreen("Bank meeting complete. The bank is now closed until you buy something.");
+          setStatus("Each shopper must BUY (item or pizza) before withdrawing again.");
+        } else {
+          const nextBanker = bankMeetingQueue[bankMeetingIndex];
+          setStatus("Next: " + nextBanker + " presses BANK to withdraw once.");
+        }
+
+        return;
+      }
 
       if (!p.canBank) {
         // “Bank closed” rule: you must buy something (or pizza) before next withdrawal.
