@@ -5,6 +5,10 @@
   <title>Mall Madness Computer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <!-- Browser tab icons (favicon) -->
+  <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="icon" href="icons/favicon-16.png" sizes="16x16" type="image/png" />
+
   <!-- PWA: theme color + manifest -->
   <meta name="theme-color" content="#ff3c7f" />
   <link rel="manifest" href="manifest.webmanifest" />
@@ -13,7 +17,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Mall Madness" />
-  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
 
   <style>
     :root {
@@ -946,7 +950,7 @@ function issueMovementForCurrentPlayer() {
             "... You're hungry. Meet a friend at the Pizza Shop. Move your shopper and any one opponent to the Pizza Shop.";
           playClip("HUNGRY_PIZZA", msg);
           setStatus(
-            "You can BUY pizza (choose Pizza) to unlock the bank again later. You don't get a peg for pizza."
+            "You can BUY pizza (choose Pizza) to unlock the bank again later. You don't have to use the full count when entering a store or bank."
           );
           break;
 
